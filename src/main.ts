@@ -1,24 +1,55 @@
+// imports
 import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.ts'
+import {
+    GameLoop,
+    init,
+    initPointer
+} from 'kontra';
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+// imports: images
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+// import sprite instances
+import SceneManager from "./scenes/sceneManager.ts";
+import LoadingScene from "./scenes/loadingScene.ts";
+import MenuScene from "./scenes/menuScene.ts";
+import GameScene from "./scenes/gameScene.ts";
+import WinScene from "./scenes/winScene.ts";
+
+// initialize kontra
+init();
+initPointer();
+
+// create scenes
+const loadingScene = new LoadingScene('loading');
+const menuScene = new MenuScene('menu');
+const gameScene = new GameScene('game');
+const winScene = new WinScene('win');
+
+// create scene manager
+let sceneManager = new SceneManager();
+sceneManager.init([loadingScene, menuScene, gameScene, winScene]);
+
+// game loop
+let loop = GameLoop({
+
+    // update
+    update: function(): void {
+
+        sceneManager.currentScene.update();
+
+    },
+
+    // render
+    render: function(): void {
+
+        sceneManager.currentScene.render();
+
+    }
+
+});
+
+// start loop
+loop.start();
+
+// exports
+export {sceneManager};
