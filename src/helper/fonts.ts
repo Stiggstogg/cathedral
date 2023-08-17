@@ -23,4 +23,12 @@ myFonts.push({
     textAlign: 'center'
 });
 
+// Font 2 (status bar font)
+myFonts.push({
+    font: '24px Arial',
+    color: 'white',
+    anchor: {x: 0, y: 0},
+    textAlign: 'left'
+})
+
 export default myFonts;
