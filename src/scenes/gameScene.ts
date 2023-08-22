@@ -1,11 +1,13 @@
 // imports
 import {
     Grid,
+    on,
     SceneClass,
     Text
 } from 'kontra';
 import myFonts from "../helper/fonts.ts";
 import {gameOptions} from "../helper/gameOptions.ts";
+import Place from "../sprites/Place.ts";
 
 // Game scene: Main game scene
 export default class GameScene extends SceneClass {
@@ -15,41 +17,102 @@ export default class GameScene extends SceneClass {
     private iron!: Text;
     private bread!: Text;
     private tools!: Text;
+    readonly places: Place[];
+    private market!: Place;
+    private town!: Place;
+    private year!: Text;
+    private progress!: Text;
+    private tickLength!: number;        // length of one tick in ms
+    private lastTickTime!: number;      // time when the last tick happened
+    private nextTick!: number;           // number of the next tick
 
     constructor(id: string) {
 
         super({id: id});
 
+        // initialize variables
+        this.places = [];
+
     }
 
     onShow() {
 
+        // year
+        this.year = Text({text: '1213', ...myFonts[0], x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.1});
+
         // status bar
-        this.money = Text({text: '🪙: 0', ...myFonts[2]});
+        this.money = Text({text: '🪙: 0 FRT', ...myFonts[2]});
         this.stone = Text({text: '🪨: 0 kg', ...myFonts[2]});
         this.iron = Text({text: '🧲: 0 kg', ...myFonts[2]});
         this.bread = Text({text: '🥖: 0 pcs', ...myFonts[2]});
         this.tools = Text({text: '⚒️: 0 pcs', ...myFonts[2]});
 
         let resources = Grid({
-            x: gameOptions.gameHeight * 0.01,
+            x: gameOptions.gameWidth * 0.01,
             y: gameOptions.gameWidth * 0.01,
             anchor: {x: 0, y: 0},
-            rowGap: [gameOptions.gameHeight * 0.02],
+            rowGap: gameOptions.gameHeight * 0.02,
             children: [this.money, this.stone, this.iron, this.bread, this.tools]
         })
 
+        // places
+        this.places.push(new Place(0.25, 0.75, 'Bishop', '✝️', 3));
+        this.places.push(new Place(0.37, 0.35, 'Bakery', '🥖', 3));
+        this.places.push(new Place(0.73, 0.35, 'Blacksmith', '⚒️', 3));
+        this.places.push(new Place(0.85, 0.75, 'Masonry', '🪨', 3));
+        this.places.push(new Place(0.55, 0.63, 'Cathedral', '⛪', 4));
+
+        this.town = new Place(0.05, 0.85, 'Town', '🏘️', 3);
+        this.market = new Place(0.05, 0.55, 'Market', '🧺', 3);
+
+        // progress
+        this.progress = Text({text: '100 %', ...myFonts[1], x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.90});
+        this.progress.color = 'white';
+
         // add elements to scene
-        this.add(resources);
+        this.add([this.year, resources, this.market.compo, this.town.compo, this.progress]);
+
+        for (let p of this.places) {        // add all places
+            this.add(p.compo);
+        }
+
+        // events
+        on('clickCathedral', () => {console.log('Cathedral was clicked')}); // TODO: Add other events
+
+        // tick system setup
+        this.tickLength = Math.round(gameOptions.yearLength * 1000 / this.places.length);           // calculate tick length
+        this.lastTickTime = Date.now() - this.tickLength;                                                  // set the last tick to now - tick length to ensure it starts directly with the first tick
+        this.nextTick = 0;                                                                             // set the next tick to 0
+
+
 
     }
 
     onHide() {
 
+        // TODO: Maybe events need to be turned off!
+
     }
 
     update() {
         super.update();
+
+        // tick system
+
+        if (Date.now() - this.lastTickTime > this.tickLength) {         // check if the next tick is due and execute it
+
+            this.lastTickTime = Date.now();                 // set the last tick time to now
+            this.places[this.nextTick].tick();              // execute the tick on the place
+            this.nextTick++;                                // increase the tick counter
+
+            if (this.nextTick >= this.places.length) {
+
+                this.nextTick = 0;                                              // set the tick counter to 0
+                this.year.text = String(Number(this.year.text) + 1);      // increase the year
+
+            }
+
+        }
 
     }
 

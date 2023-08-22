@@ -61,6 +61,9 @@ export default class MenuScene extends SceneClass {
         this.add(menu);
 
 
+        // Change automatically to the game scene TODO: Remove for release
+        sceneManager.start('game');
+
 
     }
 

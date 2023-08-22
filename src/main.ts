@@ -75,13 +75,11 @@ function autoFitCanvas() {
 
         canvas.style.height = String(window.innerHeight) + 'px';
         canvas.style.width = String(window.innerHeight * canvasRatio) + 'px';
-        console.log('hey');
     }
     else {
 
         canvas.style.width = String(window.innerWidth) + 'px';
         canvas.style.height = String(window.innerWidth / canvasRatio) + 'px';
-        console.log('ho');
 
     }
 
