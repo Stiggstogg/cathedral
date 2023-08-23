@@ -9,7 +9,7 @@ let myFonts: OneFont[] = [];
 
 // Font 0 (Title in menu)
 myFonts.push({
-    font: '72px Arial',
+    font: '72px Copperplate Gothic',
     color: 'white',
     anchor: {x: 0.5, y: 0.5},
     textAlign: 'center'
@@ -17,7 +17,7 @@ myFonts.push({
 
 // Font 1 (elements in menu)
 myFonts.push({
-    font: '48px Arial',
+    font: '48px Copperplate Gothic',
     color: 'yellow',
     anchor: {x: 0.5, y: 0.5},
     textAlign: 'center'
@@ -25,7 +25,7 @@ myFonts.push({
 
 // Font 2 (status bar and progress bar, places name)
 myFonts.push({
-    font: '24px Arial',
+    font: '24px Copperplate Gothic',
     color: 'white',
     anchor: {x: 0, y: 0},
     textAlign: 'left'
@@ -49,9 +49,25 @@ myFonts.push({
 
 // Font 5 (progress bar)
 myFonts.push({
-    font: '24px Arial',
+    font: '24px Copperplate Gothic',
     color: 'white',
     anchor: {x: 0, y: 0},
+    textAlign: 'center'
+});
+
+// Font 6 (Inside place title)
+myFonts.push({
+    font: '48px Copperplate Gothic',
+    color: 'Black',
+    anchor: {x: 0.5, y: 0},
+    textAlign: 'center'
+});
+
+// Font 7 (Inside place subtitle (year and chronicles))
+myFonts.push({
+    font: '32px Copperplate Gothic',
+    color: 'Black',
+    anchor: {x: 0.5, y: 0},
     textAlign: 'center'
 });
 

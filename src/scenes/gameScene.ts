@@ -8,6 +8,7 @@ import {
 import myFonts from "../helper/fonts.ts";
 import {gameOptions} from "../helper/gameOptions.ts";
 import Place from "../sprites/Place.ts";
+import InsidePlace from "../sprites/InsidePlace.ts";
 
 // Game scene: Main game scene
 export default class GameScene extends SceneClass {
@@ -25,6 +26,7 @@ export default class GameScene extends SceneClass {
     private tickLength!: number;        // length of one tick in ms
     private lastTickTime!: number;      // time when the last tick happened
     private nextTick!: number;           // number of the next tick
+    private insidePlace!: InsidePlace;
 
     constructor(id: string) {
 
@@ -69,6 +71,9 @@ export default class GameScene extends SceneClass {
         this.progress = Text({text: '100 %', ...myFonts[1], x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.90});
         this.progress.color = 'white';
 
+        // inside place
+        this.insidePlace = new InsidePlace();
+
         // add elements to scene
         this.add([this.year, resources, this.market.compo, this.town.compo, this.progress]);
 
@@ -76,14 +81,15 @@ export default class GameScene extends SceneClass {
             this.add(p.compo);
         }
 
+        this.add([this.insidePlace]);   // needs to be added at the end to ensure it is on top
+
         // events
-        on('clickCathedral', () => {console.log('Cathedral was clicked')}); // TODO: Add other events
+        on('clickCathedral', () => {this.insidePlace.show()}); // TODO: Add other events
 
         // tick system setup
         this.tickLength = Math.round(gameOptions.yearLength * 1000 / this.places.length);           // calculate tick length
         this.lastTickTime = Date.now() - this.tickLength;                                                  // set the last tick to now - tick length to ensure it starts directly with the first tick
         this.nextTick = 0;                                                                             // set the next tick to 0
-
 
 
     }
