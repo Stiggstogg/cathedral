@@ -39,7 +39,7 @@ myFonts.push({
     textAlign: 'center'
 });
 
-// Font 4 (place picture, cathedral
+// Font 4 (place picture, cathedral)
 myFonts.push({
     font: '180px Arial',
     color: 'white',
@@ -50,9 +50,9 @@ myFonts.push({
 // Font 5 (progress bar)
 myFonts.push({
     font: '24px Copperplate Gothic',
-    color: 'white',
+    color: 'black',
     anchor: {x: 0, y: 0},
-    textAlign: 'center'
+    textAlign: 'left'
 });
 
 // Font 6 (Inside place title)

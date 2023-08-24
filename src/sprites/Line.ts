@@ -4,6 +4,7 @@ import {GameObjectClass} from 'kontra';
 export default class Line extends GameObjectClass {
 
     private properties: LineProperties;
+    public length: number;
 
     constructor(properties: LineProperties) {
         super({
@@ -12,6 +13,7 @@ export default class Line extends GameObjectClass {
         });
 
         this.properties = properties
+        this.length = this.properties.length;
     }
 
     draw() {
