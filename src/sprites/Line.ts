@@ -18,7 +18,7 @@ export default class Line extends GameObjectClass {
 
     draw() {
 
-        this.context!.fillStyle = this.properties.color;
+        this.context!.strokeStyle = this.properties.color;
 
         this.context!.beginPath();
         this.context!.moveTo(0, 0);

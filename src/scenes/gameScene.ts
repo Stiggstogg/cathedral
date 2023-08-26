@@ -10,6 +10,7 @@ import {gameOptions} from "../helper/gameOptions.ts";
 import Place from "../sprites/Place.ts";
 import InsidePlace from "../sprites/YearBook.ts";
 import YearBook from "../sprites/YearBook.ts";
+import WorkerTile from "../sprites/WorkerTile.ts";
 
 // Game scene: Main game scene
 export default class GameScene extends SceneClass {
@@ -43,7 +44,7 @@ export default class GameScene extends SceneClass {
         // year
         this.year = Text({text: '1213', ...myFonts[0], x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.1});
 
-        // status bar
+        // resources bar
         this.money = Text({text: '🪙: 0 FRT', ...myFonts[2]});
         this.stone = Text({text: '🪨: 0 kg', ...myFonts[2]});
         this.iron = Text({text: '🧲: 0 kg', ...myFonts[2]});
@@ -59,21 +60,27 @@ export default class GameScene extends SceneClass {
         })
 
         // places
-        this.places.push(new Place(0.25, 0.75, 'Bishop', '✝️', 3));
-        this.places.push(new Place(0.37, 0.35, 'Bakery', '🥖', 3));
-        this.places.push(new Place(0.73, 0.35, 'Blacksmith', '⚒️', 3));
-        this.places.push(new Place(0.85, 0.75, 'Masonry', '🪨', 3));
-        this.places.push(new Place(0.55, 0.63, 'Cathedral', '⛪', 4));
-
-        this.town = new Place(0.05, 0.85, 'Town', '🏘️', 3);
-        this.market = new Place(0.05, 0.55, 'Market', '🧺', 3);
+        this.places.push(new Place(0.25, 0.75, 'Bishop', '✝️', 3, 'Bishop',
+            [true, false, false, false, false]));
+        this.places.push(new Place(0.37, 0.35, 'Bakery', '🥖', 3, 'Workshop',
+            [true, true, false, false, false]));
+        this.places.push(new Place(0.73, 0.35, 'Blacksmith', '⚒️', 3, 'Workshop',
+            [true, true, true, false, false]));
+        this.places.push(new Place(0.85, 0.75, 'Masonry', '🪨', 3, 'Workshop',
+            [true, true, true, true, true]));
+        this.places.push(new Place(0.55, 0.63, 'Cathedral', '⛪', 4, 'Cathedral',
+            [false, false, false, false, false]));
+        this.town = new Place(0.05, 0.85, 'Town', '🏘️', 3, 'Town',
+            [false, false, false, false, false]);
+        this.market = new Place(0.05, 0.55, 'Market', '🧺', 3, 'Market',
+            [false, false, false, false, false]);
 
         // progress
         this.progress = Text({text: '100 %', ...myFonts[1], x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.90});
         this.progress.color = 'white';
 
         // inside place
-        this.yearBook = new YearBook();
+        this.yearBook = new YearBook(this.places[1]);
 
         // add elements to scene
         this.add([this.year, resources, this.market.compo, this.town.compo, this.progress]);
@@ -84,13 +91,21 @@ export default class GameScene extends SceneClass {
 
         this.add([this.yearBook]);   // needs to be added at the end to ensure it is on top
 
-        // events
-        on('clickCathedral', () => {this.yearBook.show()}); // TODO: Add other events
+        // Event when clicking on any of the workshops
+        on('clickWorkshop', (place: Place) => {
+            this.yearBook.setPlace(place);
+            this.yearBook.setYear(Number(this.year.text));
+            this.yearBook.fillPages();
+            this.yearBook.show();
+        });
 
         // tick system setup
         this.tickLength = Math.round(gameOptions.yearLength * 1000 / this.places.length);           // calculate tick length
         this.lastTickTime = Date.now() - this.tickLength;                                                  // set the last tick to now - tick length to ensure it starts directly with the first tick
         this.nextTick = 0;                                                                             // set the next tick to 0
+
+        let workerTileTest = new WorkerTile();
+        this.add(workerTileTest);
 
 
     }

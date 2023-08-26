@@ -13,14 +13,14 @@ export default class Book extends SpriteClass {
     public visible: boolean;
     private readonly shadow: Sprite;
     private cover: Sprite;
-    private readonly page: Sprite;
+    public readonly page: Sprite;
     public title: Text;
     private lineSeparator: Line;
-    private titleYear: Text[];
+    public titleYear: Text[];
     public writingLines: Grid;
     private leftLines: boolean;
     private rightLines: boolean;
-    private cancelBttn: Text;
+    public cancelButton: Text;
 
     constructor(leftLines: boolean, rightLines: boolean) {
 
@@ -48,21 +48,21 @@ export default class Book extends SpriteClass {
             gameOptions.gameHeight * 0.07        // 3: gap between lines
         ];
 
-        // create title
-        this.title = Text({
-            x: gameOptions.gameWidth / 2,
-            y: gameOptions.gameHeight * 0.0005,
-            text: 'Title',
-            ...myFonts[6]
-        });
-
         // create cover
         this.cover = Sprite({
-            x: gameOptions.gameWidth * 0.05,            // parameter
+            x: gameOptions.gameWidth * 0.01,            // parameter
             y: gameOptions.gameHeight * 0.12,           // parameter
             width: gameOptions.gameWidth * 0.9,         // parameter
             height: gameOptions.gameHeight * 0.85,      // parameter
             color: '#4A0404'
+        });
+
+        // create title
+        this.title = Text({
+            x: this.width / 2,
+            y: gameOptions.gameHeight * 0.0005,
+            text: 'Title',
+            ...myFonts[6]
         });
 
         // create shadow
@@ -86,7 +86,7 @@ export default class Book extends SpriteClass {
 
         // create separator line between the pages
         this.lineSeparator = new Line({
-            x: this.width / 2,
+            x: this.cover.x + this.cover.width / 2,
             y: this.page.y,
             length: this.page.height,
             horizontal: false,
@@ -111,21 +111,21 @@ export default class Book extends SpriteClass {
         }));
 
         // cancel button
-        this.cancelBttn = Text({
+        this.cancelButton = Text({
             x: gameOptions.gameWidth * 0.96,
             y: gameOptions.gameWidth * 0.02,
-            text: '🗙',
+            text: '✖️',
             ...myFonts[6],
             anchor: {x: 0.5, y: 0.5},
             onDown: () => {this.hide();}
         });
 
-        track(this.cancelBttn);
+        track(this.cancelButton);
 
         // add all elements to the scene
         this.addChild([
             this.title, this.cover, this.shadow, this.page,
-            this.lineSeparator, ...this.titleYear, this.cancelBttn,
+            this.lineSeparator, ...this.titleYear, this.cancelButton,
         ]);
 
         // create lines for writing
@@ -153,7 +153,7 @@ export default class Book extends SpriteClass {
                 length: lineLength,
                 horizontal: true,
                 width: 1,
-                color: 'red'        // color does not work
+                color: 'black'        // color does not work
             }));
 
         }
@@ -188,6 +188,18 @@ export default class Book extends SpriteClass {
     hide() {
         this.visible = false;
 
+    }
+
+    setTitleYear(year: number) {
+
+        for (let i = 0; i < this.titleYear.length; i++) {
+            this.titleYear[i].text = String(year);
+        }
+
+    }
+
+    setTitle(title: string) {
+        this.title.text = title;
     }
 
 

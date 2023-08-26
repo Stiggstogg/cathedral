@@ -31,7 +31,7 @@ myFonts.push({
     textAlign: 'left'
 });
 
-// Font 3 (place picture, normal)
+// Font 3 (place picture, normal, , picture of workers)
 myFonts.push({
     font: '80px Arial',
     color: 'white',
@@ -47,9 +47,9 @@ myFonts.push({
     textAlign: 'center'
 });
 
-// Font 5 (progress bar)
+// Font 5 (text in yearbook)
 myFonts.push({
-    font: '24px Copperplate Gothic',
+    font: '20px Copperplate Gothic',
     color: 'black',
     anchor: {x: 0, y: 0},
     textAlign: 'left'
@@ -63,7 +63,7 @@ myFonts.push({
     textAlign: 'center'
 });
 
-// Font 7 (Inside place subtitle (year and chronicles))
+// Font 7 (Inside place subtitle (year and chronicles), name in worker tile)
 myFonts.push({
     font: '32px Copperplate Gothic',
     color: 'Black',
