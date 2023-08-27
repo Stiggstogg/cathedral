@@ -10,7 +10,8 @@ import Line from "./Line.ts"
 
 export default class Book extends SpriteClass {
 
-    public visible: boolean;
+    public visible: boolean;            // is the whole place visible?
+    public bookVisible: boolean;        // is the book visible?
     private readonly shadow: Sprite;
     private cover: Sprite;
     public readonly page: Sprite;
@@ -33,6 +34,7 @@ export default class Book extends SpriteClass {
 
         // initialize variables
         this.visible = false;
+        this.bookVisible = true;
         this.titleYear = [];
         this.leftLines = leftLines;         // should there be lines on the left side of the page?
         this.rightLines = rightLines;       // should there be lines on the right side of the page?
@@ -124,7 +126,7 @@ export default class Book extends SpriteClass {
 
         // add all elements to the scene
         this.addChild([
-            this.title, this.cover, this.shadow, this.page,
+            this.title, this.shadow, this.cover, this.page,
             this.lineSeparator, ...this.titleYear, this.cancelButton,
         ]);
 
@@ -176,8 +178,8 @@ export default class Book extends SpriteClass {
     }
 
     render() {
-        if (this.visible) {
-            super.render();         // only render the inside Place object when it is shown
+        if (this.visible) {                 // only render the inside Place object when it is shown
+                super.render();
         }
     }
 
@@ -190,6 +192,12 @@ export default class Book extends SpriteClass {
 
     }
 
+    // set the title
+    setTitle(title: string) {
+        this.title.text = title;
+    }
+
+    // set the year in the title
     setTitleYear(year: number) {
 
         for (let i = 0; i < this.titleYear.length; i++) {
@@ -198,8 +206,29 @@ export default class Book extends SpriteClass {
 
     }
 
-    setTitle(title: string) {
-        this.title.text = title;
+    // change between showing the book and not showing it
+    toggleBook() {
+
+        this.bookVisible = !this.bookVisible;   // toggle the book visibility
+
+        if (this.bookVisible) {
+
+            this.addChild([this.shadow, this.cover, this.shadow, this.page, this.lineSeparator, ...this.titleYear]);
+
+            if (this.leftLines || this.rightLines) {                // do not add lines as a child if they are not needed
+                this.addChild(this.writingLines);
+            }
+
+        }
+        else {
+            this.removeChild([this.shadow, this.cover, this.shadow, this.page, this.lineSeparator, ...this.titleYear]);
+
+            if (this.leftLines || this.rightLines) {                // do not add lines as a child if they are not needed
+                this.removeChild(this.writingLines);
+            }
+
+        }
+
     }
 
 

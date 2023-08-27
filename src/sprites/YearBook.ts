@@ -60,7 +60,9 @@ export default class YearBook extends Book {
             text: '🧔‍♂️',
             ...myFonts[6],
             anchor: {x: 0.5, y: 0.5},
-            onDown: () => {this.pageChange();}
+            onDown: () => {
+                this.toggleBookWorkers();          // remove book
+            }
         });
 
         track(this.previousButton, this.nextButton, this.workersButton);
@@ -85,7 +87,6 @@ export default class YearBook extends Book {
 
         // set the texts which are not changed
         this.writeLine(true, 0, ['Balance:']);
-        this.writeLine(true, 8, ['Overall:']);
 
         let textY = this.writingLines.y - Number(this.writingLines.rowGap) * 0.75;
         let textRowGap = Number(this.writingLines.rowGap) - this.textLeft[0].height;
@@ -215,6 +216,23 @@ export default class YearBook extends Book {
         // write the events
         for (let i = 0; i < entry.events.length; i++) {
             this.writeLine(false, i+1, [entry.events[i]]);
+        }
+
+    }
+
+    toggleBookWorkers() {
+
+        this.toggleBook();
+
+        if (this.bookVisible) {
+
+            this.addChild([this.textGridLeft, this.textGridRight, this.previousButton, this.nextButton, this.workersButton]);
+
+        }
+        else {
+
+            this.removeChild([this.textGridLeft, this.textGridRight, this.previousButton, this.nextButton, this.workersButton]);
+
         }
 
     }
