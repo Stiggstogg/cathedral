@@ -8,8 +8,7 @@ import {
 import myFonts from "../helper/fonts.ts";
 import {gameOptions} from "../helper/gameOptions.ts";
 import Place from "../sprites/Place.ts";
-import InsidePlace from "../sprites/YearBook.ts";
-import YearBook from "../sprites/YearBook.ts";
+import InsidePlace from "../sprites/InsidePlace.ts";
 import WorkerTile from "../sprites/WorkerTile.ts";
 
 // Game scene: Main game scene
@@ -28,7 +27,7 @@ export default class GameScene extends SceneClass {
     private tickLength!: number;        // length of one tick in ms
     private lastTickTime!: number;      // time when the last tick happened
     private nextTick!: number;           // number of the next tick
-    private yearBook!: InsidePlace;
+    private insidePlace!: InsidePlace;
 
     constructor(id: string) {
 
@@ -80,7 +79,7 @@ export default class GameScene extends SceneClass {
         this.progress.color = 'white';
 
         // inside place
-        this.yearBook = new YearBook(this.places[1]);
+        this.insidePlace = new InsidePlace();
 
         // add elements to scene
         this.add([this.year, resources, this.market.compo, this.town.compo, this.progress]);
@@ -89,14 +88,11 @@ export default class GameScene extends SceneClass {
             this.add(p.compo);
         }
 
-        this.add([this.yearBook]);   // needs to be added at the end to ensure it is on top
+        this.add([this.insidePlace]);   // needs to be added at the end to ensure it is on top
 
         // Event when clicking on any of the workshops
-        on('clickWorkshop', (place: Place) => {
-            this.yearBook.setPlace(place);
-            this.yearBook.setYear(Number(this.year.text));
-            this.yearBook.fillPages();
-            this.yearBook.show();
+        on('clickWorkshop', () => {
+            this.insidePlace.show();
         });
 
         // tick system setup

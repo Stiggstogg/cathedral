@@ -1,4 +1,4 @@
-import Book from "./Book.ts";
+import InsidePlace from "./InsidePlace.ts";
 import {
     Grid,
     Text,
@@ -8,7 +8,7 @@ import myFonts from "../helper/fonts.ts";
 import {gameOptions} from "../helper/gameOptions.ts";
 import Place from "./Place.ts";
 
-export default class YearBook extends Book {
+export default class YearBook extends InsidePlace {
 
     private textLeft: Text[];
     private textLeftNumRows: number;

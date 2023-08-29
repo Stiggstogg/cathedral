@@ -2,7 +2,7 @@ import {
     Text,
     Sprite,
     SpriteClass,
-    Grid, track
+    Grid
 } from 'kontra'
 import {gameOptions} from "../helper/gameOptions.ts";
 import myFonts from "../helper/fonts.ts";
@@ -10,61 +10,55 @@ import Line from "./Line.ts"
 
 export default class Book extends SpriteClass {
 
-    public visible: boolean;            // is the whole place visible?
-    public bookVisible: boolean;        // is the book visible?
     private readonly shadow: Sprite;
-    private cover: Sprite;
-    public readonly page: Sprite;
-    public title: Text;
-    private lineSeparator: Line;
-    public titleYear: Text[];
-    public writingLines: Grid;
-    private leftLines: boolean;
-    private rightLines: boolean;
-    public cancelButton: Text;
+    private readonly cover: Sprite;
+    private readonly page: Sprite;
+    private readonly lineSeparator: Line;
+    public year: Text[];
+    private showLinesLeft: boolean;
+    private showLinesRight: boolean;
+    private readonly linesLeft: Grid;
+    private readonly linesRight: Grid;
+    private showTextLeft: boolean;
+    private showTextRight: boolean;
+    private textLeft: Text[];
+    private textRight: Text[];
+    private textLeftGrid: Grid;
+    private textRightGrid: Grid;
 
-    constructor(leftLines: boolean, rightLines: boolean) {
+    constructor() {
 
         super({x: 0,
             y: 0,
-            width: gameOptions.gameWidth,
-            height: gameOptions.gameHeight,
-            color: '#EADDCA'
+            width: 0,
+            height: 0
         });             // create the background (parent sprite)
 
         // initialize variables
-        this.visible = false;
-        this.bookVisible = true;
-        this.titleYear = [];
-        this.leftLines = leftLines;         // should there be lines on the left side of the page?
-        this.rightLines = rightLines;       // should there be lines on the right side of the page?
+        this.year = [];
+        this.showLinesLeft = true;
+        this.showLinesRight = true;
+        this.showTextLeft = true;
+        this.showTextRight = true;
 
         // parameters
         let shadowDistance = gameOptions.gameWidth * 0.01;      // distance of the shadow
         let coverWidth = gameOptions.gameWidth * 0.01;          // book cover width
         let lineNum = 9;               // number of writing lines per page
         let gapsY = [
-            gameOptions.gameHeight * 0.02,      // 0: year from page top
-            gameOptions.gameHeight * 0.02,      // 1: title line from title
-            gameOptions.gameHeight * 0.12,       // 2: writing lines from title year
-            gameOptions.gameHeight * 0.07        // 3: gap between lines
+            gameOptions.gameHeight * 0.02,          // 0: year from page top
+            gameOptions.gameHeight * 0.02,          // 1: title line from title
+            gameOptions.gameHeight * 0.12,          // 2: writing lines from title year
+            gameOptions.gameHeight * 0.07           // 3: gap between lines
         ];
 
         // create cover
         this.cover = Sprite({
-            x: gameOptions.gameWidth * 0.01,            // parameter
-            y: gameOptions.gameHeight * 0.12,           // parameter
-            width: gameOptions.gameWidth * 0.9,         // parameter
-            height: gameOptions.gameHeight * 0.85,      // parameter
+            x: gameOptions.gameWidth * 0.01,
+            y: gameOptions.gameHeight * 0.12,
+            width: gameOptions.gameWidth * 0.9,
+            height: gameOptions.gameHeight * 0.85,
             color: '#4A0404'
-        });
-
-        // create title
-        this.title = Text({
-            x: this.width / 2,
-            y: gameOptions.gameHeight * 0.0005,
-            text: 'Title',
-            ...myFonts[6]
         });
 
         // create shadow
@@ -96,140 +90,134 @@ export default class Book extends SpriteClass {
             color: 'black',
         });
 
-        // create title Year
-        this.titleYear.push(Text({
-            x: this.page.x + this.page.width * 0.25,
-            y: this.page.y + gapsY[0],
-            text: '1213',
-            ...myFonts[7]
-        }));
+        // create year title on the top of the page
+        for (let i = 0; i < 2; i++) {
+            this.year.push(Text({
+                x: this.page.x + this.page.width * (0.25 + 0.5 * i),        // adds the title in the middle of the left side (0.25) and in the middle of the right side (0.75)
+                y: this.page.y + gapsY[0],
+                text: '1213',
+                ...myFonts[7]
+            }));
+        }
 
-        // year titles at the top of the page
-        this.titleYear.push(Text({
-            x: this.page.x + this.page.width * 0.75,
-            y: this.titleYear[0].y,
-            text: '1213',
-            ...myFonts[7]
-        }));
-
-        // cancel button
-        this.cancelButton = Text({
-            x: gameOptions.gameWidth * 0.96,
-            y: gameOptions.gameWidth * 0.02,
-            text: '✖️',
-            ...myFonts[6],
-            anchor: {x: 0.5, y: 0.5},
-            onDown: () => {this.hide();}
-        });
-
-        track(this.cancelButton);
-
-        // add all elements to the scene
-        this.addChild([
-            this.title, this.shadow, this.cover, this.page,
-            this.lineSeparator, ...this.titleYear, this.cancelButton,
-        ]);
+        // add all childern (barebone of the book without lines and text) to the sprite
+        this.addChild([this.shadow, this.cover, this.page, this.lineSeparator, ...this.year]);
 
         // create lines for writing
-        let lines: Line[] = [];
+        let separateLinesLeft: Line[] = [];
+        let separateLinesRight: Line[] = [];
 
-        let numberOfLinesToDraw = lineNum;              // total number of lines to draw
-        let numOfCols = 1;                              // set the number of columns
         let lineStartX = this.page.x + 2 * coverWidth;  // set the x coordinate where the line should start
         let lineLength = this.page.width / 2 - 4 * coverWidth;  // length of the lines
+        let lineProperties = {
+            x: 0,
+            y: 0,
+            horizontal: true,
+            width: 1,
+            color: 'black'        // color does not work
+        };
 
-        if (this.leftLines && this.rightLines) {           // lines on both pages
-            numberOfLinesToDraw = 2 * lineNum;
-            numOfCols = 2;
-        }
-        else if (!this.leftLines && this.rightLines) {      // lines only on right page
-            lineStartX = lineStartX + lineLength + 4 * coverWidth;
-        }
+        for (let i = 0; i < lineNum; i++) {     // create the separate lines
 
+            separateLinesLeft.push(new Line({
+                ...lineProperties,
+                length: lineLength
+            }));
 
-        for (let i = 0; i < numberOfLinesToDraw; i++) {
-
-            lines.push(new Line({
-                x: 0,
-                y: 0,
-                length: lineLength,
-                horizontal: true,
-                width: 1,
-                color: 'black'        // color does not work
+            separateLinesRight.push(new Line({
+                ...lineProperties,
+                length: lineLength
             }));
 
         }
 
-        this.writingLines = Grid({
+        this.linesLeft = Grid({                 // add the lines to a grid
             x: lineStartX,
-            y: this.titleYear[0].y + this.titleYear[0].height + gapsY[2],
+            y: this.year[0].y + this.year[0].height + gapsY[2],
             rowGap: gapsY[3],
-            colGap: lines[0].length + 4 * coverWidth,
-            numCols: numOfCols,
-            flow: 'grid',
-            justify: 'center',
-            children: lines
+            children: separateLinesLeft
         });
 
-        if (this.leftLines || this.rightLines) {                // do not add lines as a child if they are not needed
-            this.addChild(this.writingLines);
+        this.linesRight = Grid({                 // add the lines to a grid
+            x: lineStartX + lineLength + 4 * coverWidth,
+            y: this.year[0].y + this.year[0].height + gapsY[2],
+            rowGap: gapsY[3],
+            children: separateLinesRight
+        });
+
+        // create the texts
+        this.textLeft = [];
+        this.textRight = [];
+        let textProperties = {
+            x: 0,
+            y: 0,
+            text: 'huhu',
+            ...myFonts[5]
         }
+
+        for (let i = 0; i < lineNum; i++) {     // create the text lines
+
+            this.textLeft.push(Text(textProperties));
+            this.textRight.push(Text(textProperties));
+
+        }
+
+        let textY = this.linesLeft.y - Number(this.linesLeft.rowGap) * 0.75;
+        let textRowGap = Number(this.linesLeft.rowGap) - this.textLeft[0].height;
+
+        this.textLeftGrid = Grid( {         // TODO: Columns are missing!
+            x: this.linesLeft.x,
+            y: textY,
+            rowGap: textRowGap,
+            children: this.textLeft
+        });
+
+        this.textRightGrid = Grid( {         // TODO: Columns are missing!
+            x: this.linesRight.x,
+            y: textY,
+            rowGap: textRowGap,
+            children: this.textRight
+        });
 
     }
 
     render() {
-        if (this.visible) {                 // only render the inside Place object when it is shown
-                super.render();
+        super.render();
+
+        if (this.showLinesLeft) {           // render the left lines only if they are shown
+            this.linesLeft.render();
         }
-    }
 
-    show() {
-        this.visible = true;
-    }
+        if (this.showLinesRight) {           // render the right lines only if they are shown
+            this.linesRight.render();
+        }
 
-    hide() {
-        this.visible = false;
+        if (this.showTextLeft) {           // render the left lines only if they are shown
+            this.textLeftGrid.render();
+        }
 
-    }
-
-    // set the title
-    setTitle(title: string) {
-        this.title.text = title;
-    }
-
-    // set the year in the title
-    setTitleYear(year: number) {
-
-        for (let i = 0; i < this.titleYear.length; i++) {
-            this.titleYear[i].text = String(year);
+        if (this.showTextRight) {           // render the right lines only if they are shown
+            this.textRightGrid.render();
         }
 
     }
 
-    // change between showing the book and not showing it
-    toggleBook() {
+    initializeBook(showLinesLeft: boolean, showLinesRight: boolean, showTextLeft: boolean, showTextRight: boolean) {
 
-        this.bookVisible = !this.bookVisible;   // toggle the book visibility
-
-        if (this.bookVisible) {
-
-            this.addChild([this.shadow, this.cover, this.shadow, this.page, this.lineSeparator, ...this.titleYear]);
-
-            if (this.leftLines || this.rightLines) {                // do not add lines as a child if they are not needed
-                this.addChild(this.writingLines);
-            }
-
-        }
-        else {
-            this.removeChild([this.shadow, this.cover, this.shadow, this.page, this.lineSeparator, ...this.titleYear]);
-
-            if (this.leftLines || this.rightLines) {                // do not add lines as a child if they are not needed
-                this.removeChild(this.writingLines);
-            }
-
-        }
+        this.showLinesLeft = showLinesLeft;
+        this.showLinesRight = showLinesRight;
+        this.showTextLeft = showTextLeft;
+        this.showTextRight = showTextRight;
 
     }
 
+    // set the year on the page
+    setYear(year: number) {
+
+        for (let i = 0; i < this.year.length; i++) {
+            this.year[i].text = String(year);
+        }
+
+    }
 
 }
