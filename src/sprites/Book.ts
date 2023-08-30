@@ -204,7 +204,7 @@ export default class Book extends SpriteClass {
             colGap: textColGap,
             numCols: numCol,
             flow: 'grid',
-            justify: ['start', 'end', 'end', 'end', 'end', 'end', 'end'],
+            justify: ['start', 'end', 'end', 'end', 'end', 'end'],
             children: this.textLeftMulticol
         });
 
@@ -265,6 +265,7 @@ export default class Book extends SpriteClass {
         }
 
     }
+
 
     // setup the pages
     setupPages(year: number, linesLeft: boolean, linesRight: boolean,

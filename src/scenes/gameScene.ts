@@ -91,7 +91,7 @@ export default class GameScene extends SceneClass {
 
         // Event when clicking on any of the workshops
         on('clickPlace', (place: Place) => {
-            this.insidePlace.show(place);
+            this.insidePlace.show(place, Number(this.year.text));
         });
 
         // tick system setup

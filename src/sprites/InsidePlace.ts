@@ -139,7 +139,7 @@ export default class InsidePlace extends SpriteClass {
         }
     }
 
-    show(place: Place) {
+    show(place: Place, year: number) {
         this.visible = true;                // make it visible
         this.place = place;                 // store the place
         this.title.text = this.place.name + ' ' + this.place.emoji;  // set the title
@@ -151,6 +151,8 @@ export default class InsidePlace extends SpriteClass {
             this.workersVisible = false;
             this.workerButtonVisible = true;
             this.bookButtonVisible = false;
+
+            this.fillPageWorkshop(year);
 
         }
         else if (this.place.placeType == 'Bishop') {
@@ -182,6 +184,65 @@ export default class InsidePlace extends SpriteClass {
 
     hide() {
         this.visible = false;
+    }
+
+    fillPageWorkshop(year: number) {
+
+        let entry = this.place.readYearbookEntry(year);     // get the entry from the yearbook
+
+        let textRight: string[] = [];
+
+        // left text
+        let relevantResources = this.place.resources;   // get the array with the relevant resources
+        let resourceSymbols = ['🪙','🥖','⚒️','🪨','⛪'];
+        let textLeft: string[] = [];                        // initialize
+        textLeft.push('Balance:', ' ', ' ', ' ', ' ', ' ', ' ');      // first title line and first entry of the resources line (empty)
+
+        for (let i = 0; i < relevantResources.length; i++) {    // write resource symbols
+            if (relevantResources[i]) {
+                textLeft.push(resourceSymbols[i]);
+            }
+            else {
+                textLeft.push(' ');
+            }
+        }
+
+        for (let i = 0; i < entry.workerBalance.length; i++) {      // write worker balance
+
+            textLeft.push(entry.workerBalance[i].name);
+
+            for (let j = 0; j < entry.workerBalance[i].balance.length; j++) {
+
+                if (relevantResources[j]) {
+                    textLeft.push(String(entry.workerBalance[i].balance[j]));
+                }
+                else {
+                    textLeft.push(' ');
+                }
+
+            }
+
+        }
+
+        console.log(textLeft);
+
+        textLeft.push(' ', ' ', ' ', ' ', ' ', ' ');
+        textLeft.push('Overall:')
+
+        for (let i = 0; i < entry.overallBalance.length; i++) {
+
+            if (relevantResources[i]) {
+                textLeft.push(String(entry.overallBalance[i]));
+            }
+            else {
+                textLeft.push('');
+            }
+
+        }
+
+        this.book.setupPages(entry.year, true, true,
+            false, true, true, textLeft, textRight);
+
     }
 
 

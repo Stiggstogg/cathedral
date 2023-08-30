@@ -20,7 +20,7 @@ interface YearbookEntry {
     events: string[]
 }
 
-interface WorkerBalance {
+interface WorkerEntry {
     name: string,
     balance: number[]
 }
