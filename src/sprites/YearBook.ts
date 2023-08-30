@@ -26,7 +26,7 @@ export default class YearBook extends InsidePlace {
 
     constructor(place: Place) {
 
-        super(true, true);
+        super(place);
 
         // set parameters
         this.title.text = 'Bakery 🥖';

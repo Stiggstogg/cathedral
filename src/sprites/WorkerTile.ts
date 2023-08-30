@@ -11,7 +11,6 @@ import Button from "../sprites/Button.ts";
 
 export default class WorkerTile extends SpriteClass {
 
-    public visible: boolean;
     public hire: boolean;
     private readonly shadow: Sprite;
     private readonly background: Sprite;
@@ -24,21 +23,20 @@ export default class WorkerTile extends SpriteClass {
     private reputation: Text;
     private hireFireButton: Button;
 
-    constructor() {
+    constructor(x: number) {
 
-        super({x: gameOptions.gameWidth * 0.1,
+        super({x: x,
             y: gameOptions.gameHeight * 0.12,
             width: gameOptions.gameWidth * 0.17,
             height: gameOptions.gameHeight * 0.85,
-            color: '#EADDCA'
+            color: '#E1C16E'
         });             // create the background (parent sprite)
 
         // initialize variables
-        this.visible = false;
         this.hire = true;
 
         // parameters
-        let shadowDistance = gameOptions.gameWidth * 0.01;      // distance of the shadow
+        let shadowDistance = gameOptions.gameWidth * 0.008;      // distance of the shadow
         let yDistances = [
             0,                                      // background to name
             gameOptions.gameHeight * 0.05,         // title to picture
@@ -67,7 +65,7 @@ export default class WorkerTile extends SpriteClass {
             opacity: 0.3
         });
 
-        // create background (the same as the parent but it needs to be drawn after the shadow)
+        // create background (the same as the parent but it needs to be drawn again after the shadow)
         this.background = Sprite({
             x: 0,
             y: 0,
@@ -161,12 +159,6 @@ export default class WorkerTile extends SpriteClass {
             this.hireFireButton
         ]);
 
-    }
-
-    render() {
-        if (this.visible) {
-            super.render();         // only render the inside Place object when it is shown
-        }
     }
 
     show(hire: boolean) {

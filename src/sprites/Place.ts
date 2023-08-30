@@ -10,11 +10,12 @@ import {gameOptions} from "../helper/gameOptions.ts";
 export default class Place {
 
     public readonly name: string;
+    public readonly emoji: string;
     private readonly description: Text;
     public readonly image: Text;
     public readonly compo: Grid;
     private readonly fullYearbook: YearbookEntry[];
-    private readonly placeType: string;
+    public readonly placeType: string;
     public readonly resources: boolean[];
 
     constructor(x: number, y: number, name: string, emoji: string, emojiFont: number, placeType: string, resources: boolean[]) {
@@ -26,6 +27,7 @@ export default class Place {
         this.name = name;
         this.placeType = placeType;
         this.resources = resources;
+        this.emoji = emoji;
 
         // create elements of the composition (picture and text)
         this.description = Text({text: this.name, ...myFonts[2], onDown: () => {this.click()}});
@@ -62,7 +64,7 @@ export default class Place {
     // action which happens if the image or the description is clicked
     click() {
 
-        emit('click' + this.placeType, this);
+        emit('clickPlace', this);
 
     }
 
