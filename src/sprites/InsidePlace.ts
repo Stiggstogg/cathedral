@@ -107,12 +107,34 @@ export default class InsidePlace extends SpriteClass {
 
         // events
         on('previousButton', () => {
-            console.log('previous Button');                 // TODO: Implement action
+            this.fillPageWorkshop(Number(this.book.year[0].text) - 1);
         });
 
         on('nextButton', () => {
-            console.log('next Button');                     // TODO: Implement proper action
+            this.fillPageWorkshop(Number(this.book.year[0].text) + 1);
         });
+
+    }
+
+    update() {
+        super.update();
+
+        this.book.update();     // book is not added as a child and therefore needs to be updated, as the multi column grid needs to update to align again in case the text changed
+
+        // check if the previous or next buttons need to be drawn
+        if (this.place.yearExist(Number(this.book.year[0].text) - 1)) {         // previous button
+            this.book.showPreviousButton = true;
+        }
+        else {
+            this.book.showPreviousButton = false;
+        }
+
+        if (this.place.yearExist(Number(this.book.year[0].text) + 1)) {         // previous button
+            this.book.showNextButton = true;
+        }
+        else {
+            this.book.showNextButton = false;
+        }
 
     }
 
@@ -162,6 +184,8 @@ export default class InsidePlace extends SpriteClass {
             this.workerButtonVisible = false;
             this.bookButtonVisible = false;
 
+            this.fillPageWorkshop(year);
+
         }
         else if (this.place.placeType == 'Market') {
 
@@ -189,8 +213,6 @@ export default class InsidePlace extends SpriteClass {
     fillPageWorkshop(year: number) {
 
         let entry = this.place.readYearbookEntry(year);     // get the entry from the yearbook
-
-        let textRight: string[] = [];
 
         // left text
         let relevantResources = this.place.resources;   // get the array with the relevant resources
@@ -224,8 +246,6 @@ export default class InsidePlace extends SpriteClass {
 
         }
 
-        console.log(textLeft);
-
         textLeft.push(' ', ' ', ' ', ' ', ' ', ' ');
         textLeft.push('Overall:')
 
@@ -237,6 +257,17 @@ export default class InsidePlace extends SpriteClass {
             else {
                 textLeft.push('');
             }
+
+        }
+
+        // right text (Events)
+        let textRight: string[] = [];
+
+        textRight.push('Events:');
+
+        for (let i = 0; i < entry.events.length; i++) {
+
+                textRight.push(entry.events[i]);
 
         }
 

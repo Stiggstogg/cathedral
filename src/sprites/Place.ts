@@ -46,16 +46,16 @@ export default class Place {
         track(this.description, this.image);
 
         // set first yearbook entry
-        this.fullYearbook.push({
+        this.writeYearbookEntry({
             year: 1212,
             workerBalance: [
-                {name: 'Jean', balance: [-12, -40, -47, -40, 0.3]},
-                {name: 'Robert', balance: [-10, -55, -41, -22, 0.4]},
-                {name: 'Pierre', balance: [-9, -23, -46, -45, 0.7]},
-                {name: 'Mathieu', balance: [-15, -14, -10, -19, 1.9]},
-                {name: 'Stephen', balance: [-22, -22, -65, -20, 2.3]},
+                {name: '-', balance: [0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0]},
             ],
-            overallBalance: [-68, -154, -209, -146, 5.6],
+            overallBalance: [0, 0, 0, 0, 0],
             events: ['No cathedral!', 'Nothing happened!']
         });
 
@@ -64,7 +64,9 @@ export default class Place {
     // action which happens if the image or the description is clicked
     click() {
 
-        emit('clickPlace', this);
+        if (this.placeType != "Cathedral") {        // cathedral cannot be clicked
+            emit('clickPlace', this);
+        }
 
     }
 
@@ -93,5 +95,21 @@ export default class Place {
         return this.fullYearbook[this.fullYearbook.length - 1];    // if nothing was found just provide the last entry
 
     }
+
+    // does a specific year in the yearbook exist? (needed to determine if the previous or next buttons need to be drawn
+    yearExist(year: number): boolean {
+
+        for (let i = 0; i < this.fullYearbook.length; i++) {
+
+            if (year == this.fullYearbook[i].year) {
+                return true;
+            }
+
+        }
+
+        return false;
+
+    }
+
 
 }

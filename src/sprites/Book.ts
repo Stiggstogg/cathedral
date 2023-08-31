@@ -30,8 +30,8 @@ export default class Book extends SpriteClass {
     private textLeftGrid: Grid;
     private textRightGrid: Grid;
     private textLeftMulticolGrid: Grid;
-    private showNextButton: boolean;
-    private showPreviousButton: boolean;
+    public showNextButton: boolean;
+    public showPreviousButton: boolean;
     private nextButton: Text;
     private previousButton: Text;
 
@@ -233,6 +233,16 @@ export default class Book extends SpriteClass {
 
     }
 
+    update() {
+        super.update();
+
+        this.textLeftMulticolGrid.update();     // multicolumn grid needs to be updated to align the columns if the text changes
+
+        // check if the previous or next buttons need to be drawn or not
+
+
+    }
+
     render() {
         super.render();
 
@@ -266,7 +276,6 @@ export default class Book extends SpriteClass {
 
     }
 
-
     // setup the pages
     setupPages(year: number, linesLeft: boolean, linesRight: boolean,
                textLeft: boolean, textRight: boolean, textLeftMulticol: boolean,
@@ -287,20 +296,42 @@ export default class Book extends SpriteClass {
 
         // fill the pages with content
         if (this.showTextLeft) {
-            for (let i = 0; i < contentLeft[i].length; i++) {
-                this.textLeft[i].text = contentLeft[i];
+            for (let i = 0; i < this.textLeft.length; i++) {
+
+                if (i < contentLeft.length) {
+                    this.textLeft[i].text = contentLeft[i];
+                }
+                else {
+                    this.textLeft[i].text = '';
+                }
+
             }
+
         }
 
         if (this.showTextRight) {
-            for (let i = 0; i < contentRight.length; i++) {
-                this.textRight[i].text = contentRight[i];
+            for (let i = 0; i < this.textRight.length; i++) {
+
+                if (i < contentRight.length) {
+                    this.textRight[i].text = contentRight[i];
+                }
+                else {
+                    this.textRight[i].text = '';
+                }
+
             }
         }
 
         if (this.showTextLeftMulticol) {
-            for (let i = 0; i < contentLeft.length; i++) {
-                this.textLeftMulticol[i].text = contentLeft[i];
+            for (let i = 0; i < this.textLeftMulticol.length; i++) {
+
+                if (i < contentLeft.length) {
+                    this.textLeftMulticol[i].text = contentLeft[i];
+                }
+                else {
+                    this.textLeft[i].text = '';
+                }
+
             }
         }
 

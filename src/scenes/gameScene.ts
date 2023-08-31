@@ -18,7 +18,8 @@ export default class GameScene extends SceneClass {
     private iron!: Text;
     private bread!: Text;
     private tools!: Text;
-    readonly places: Place[];
+    private readonly places: Place[];
+    private cathedral!: Place;
     private market!: Place;
     private town!: Place;
     private year!: Text;
@@ -66,8 +67,8 @@ export default class GameScene extends SceneClass {
             [true, true, true, false, false]));
         this.places.push(new Place(0.85, 0.75, 'Masonry', '🪨', 3, 'Workshop',
             [true, true, true, true, true]));
-        this.places.push(new Place(0.55, 0.63, 'Cathedral', '⛪', 4, 'Cathedral',
-            [false, false, false, false, false]));
+        this.cathedral = new Place(0.55, 0.63, 'Cathedral', '⛪', 4, 'Cathedral',
+            [false, false, false, false, false]);
         this.town = new Place(0.05, 0.85, 'Town', '🏘️', 3, 'Town',
             [false, false, false, false, false]);
         this.market = new Place(0.05, 0.55, 'Market', '🧺', 3, 'Market',
@@ -81,7 +82,7 @@ export default class GameScene extends SceneClass {
         this.insidePlace = new InsidePlace(this.places[1]);
 
         // add elements to scene
-        this.add([this.year, resources, this.market.compo, this.town.compo, this.progress]);
+        this.add([this.year, resources, this.market.compo, this.town.compo, this.cathedral.compo, this.progress]);
 
         for (let p of this.places) {        // add all places
             this.add(p.compo);
