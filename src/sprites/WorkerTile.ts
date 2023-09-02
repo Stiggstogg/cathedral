@@ -2,7 +2,8 @@ import {
     Text,
     Sprite,
     SpriteClass,
-    Grid
+    Grid,
+    emit
 } from 'kontra'
 import {gameOptions} from "../helper/gameOptions.ts";
 import myFonts from "../helper/fonts.ts";
@@ -11,19 +12,20 @@ import Button from "../sprites/Button.ts";
 
 export default class WorkerTile extends SpriteClass {
 
-    public hire: boolean;
     private readonly shadow: Sprite;
     private readonly background: Sprite;
     public name: Text;
-    private readonly picture: Text;
+    public picture: Text;
     public job: Text;
     public age: Text;
     public wage: Text;
-    private characteristics: Grid;
-    private reputation: Text;
+    private readonly characteristics: Grid;
+    public reputation: Text;
     private hireFireButton: Button;
+    private hireFireButtonVisible: boolean;
+    private readonly tilePosition: number;                   // number on which position the worker tile is placed
 
-    constructor(x: number) {
+    constructor(x: number, tilePosition: number) {
 
         super({x: x,
             y: gameOptions.gameHeight * 0.12,
@@ -33,7 +35,8 @@ export default class WorkerTile extends SpriteClass {
         });             // create the background (parent sprite)
 
         // initialize variables
-        this.hire = true;
+        this.hireFireButtonVisible = false;
+        this.tilePosition = tilePosition;
 
         // parameters
         let shadowDistance = gameOptions.gameWidth * 0.008;      // distance of the shadow
@@ -51,7 +54,7 @@ export default class WorkerTile extends SpriteClass {
         this.name = Text({
             x: this.width / 2,
             y: yDistances[0],
-            text: 'Gillaume',
+            text: '',
             ...myFonts[7]
         });
 
@@ -78,26 +81,26 @@ export default class WorkerTile extends SpriteClass {
         this.picture = Text({
             x: this.width / 2,
             y: this.name.y + this.name.height + yDistances[1],
-            text: '🧔‍♂️',
+            text: '',
             ...myFonts[3],
             anchor: {x: 0.5, y: 0}
         });
 
         // create job text
         this.job = Text({
-            text: '🥖',
+            text: '',
             ...myFonts[5]
         });
 
         // create age text
         this.age = Text({
-            text: '46',
+            text: '',
             ...myFonts[5]
         });
 
         // create age text
         this.wage = Text({
-            text: '3',
+            text: '',
             ...myFonts[5]
         });
 
@@ -135,7 +138,7 @@ export default class WorkerTile extends SpriteClass {
         this.reputation = Text({
             x: reputationTitle.x,
             y: reputationTitle.y + reputationTitle.height,
-            text: 'Hard working but high variation, good quality, cool, eats much',
+            text: '',
             ...myFonts[5],
             width: this.width - 2 * xDistances[0]
         });
@@ -145,31 +148,47 @@ export default class WorkerTile extends SpriteClass {
             0,
             0,
             'Hire',
-            () => {console.log('it was clicked')}
+            () => {
+                this.clickButton();
+            }
         );
 
-        this.hireFireButton.x = this.width / 2 - this.hireFireButton.width / 2;
-        this.hireFireButton.y = this.height - yDistances[2] - this.hireFireButton.height;
+        this.hireFireButton.x = this.x + this.width / 2 - this.hireFireButton.width / 2;
+        this.hireFireButton.y = this.y + this.height - yDistances[2] - this.hireFireButton.height;
 
         // add all elements as childs
         this.addChild([
             this.shadow, this.background, this.name, this.picture,
             characteristicsTitle, this.characteristics,
-            reputationTitle, this.reputation,
-            this.hireFireButton
+            reputationTitle, this.reputation
         ]);
 
-    }
-
-    show(hire: boolean) {
-        this.visible = true;
-        this.hire = hire;
-    }
-
-    hide() {
-        this.visible = false;
 
     }
 
+    render() {
+        super.render();
+
+        if (this.hireFireButtonVisible) {
+            this.hireFireButton.render();
+        }
+
+    }
+
+    hideButton() {
+        this.hireFireButtonVisible = false;
+    }
+
+    showButton(text: string) {
+        this.hireFireButtonVisible = true;
+        this.hireFireButton.setText(text);
+
+    }
+
+    clickButton() {
+
+        emit('hireFire', this.tilePosition);
+
+    }
 
 }

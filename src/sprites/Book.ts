@@ -204,7 +204,7 @@ export default class Book extends SpriteClass {
             colGap: textColGap,
             numCols: numCol,
             flow: 'grid',
-            justify: ['start', 'end', 'end', 'end', 'end', 'end'],
+            justify: ['start', 'end', 'end', 'end', 'end', 'end', 'end'],
             children: this.textLeftMulticol
         });
 
@@ -237,8 +237,6 @@ export default class Book extends SpriteClass {
         super.update();
 
         this.textLeftMulticolGrid.update();     // multicolumn grid needs to be updated to align the columns if the text changes
-
-        // check if the previous or next buttons need to be drawn or not
 
 
     }
@@ -323,13 +321,14 @@ export default class Book extends SpriteClass {
         }
 
         if (this.showTextLeftMulticol) {
+
             for (let i = 0; i < this.textLeftMulticol.length; i++) {
 
                 if (i < contentLeft.length) {
                     this.textLeftMulticol[i].text = contentLeft[i];
                 }
                 else {
-                    this.textLeft[i].text = '';
+                    this.textLeftMulticol[i].text = '';
                 }
 
             }

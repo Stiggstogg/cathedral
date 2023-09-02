@@ -21,8 +21,6 @@ export default class GameScene extends SceneClass {
     private tools!: Text;
     private readonly places: Place[];
     private cathedral!: Place;
-    private market!: Place;
-    private town!: Place;
     private year!: Text;
     private progress!: Text;
     private tickLength!: number;        // length of one tick in ms
@@ -60,20 +58,21 @@ export default class GameScene extends SceneClass {
         })
 
         // places
+        this.places.push(new Place(0.05, 0.55, 'Market', '🧺', 3, 'Market',
+            [false, false, false, false, false, false]));
+        this.places.push(new Place(0.05, 0.85, 'Town', '🏘️', 3, 'Town',
+            [false, false, false, false, false, false]));
         this.places.push(new Place(0.25, 0.75, 'Bishop', '✝️', 3, 'Bishop',
             [true, false, false, false, false, false]));
         this.places.push(new Place(0.37, 0.35, 'Bakery', '🥖', 3, 'Workshop',
-            [true, true, false, false, false, false]));
+            [true, false, false, true, false, false]));
         this.places.push(new Place(0.73, 0.35, 'Blacksmith', '⚒️', 3, 'Workshop',
-            [true, true, true, false, true, false]));
+            [true, true, false, true, true, false]));
         this.places.push(new Place(0.85, 0.75, 'Masonry', '🪨', 3, 'Workshop',
-            [true, true, true, true, false, true]));
+            [true, false, true, true, true, true]));
         this.cathedral = new Place(0.55, 0.63, 'Cathedral', '⛪', 4, 'Cathedral',
-            [false, false, false, false, false]);
-        this.town = new Place(0.05, 0.85, 'Town', '🏘️', 3, 'Town',
-            [false, false, false, false, false]);
-        this.market = new Place(0.05, 0.55, 'Market', '🧺', 3, 'Market',
-            [false, false, false, false, false]);
+            [false, false, false, false, false, false]);
+
 
         // progress
         this.progress = Text({text: '100 %', ...myFonts[1], x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.90});
@@ -83,7 +82,7 @@ export default class GameScene extends SceneClass {
         this.insidePlace = new InsidePlace(this.places[1]);
 
         // add elements to scene
-        this.add([this.year, resources, this.market.compo, this.town.compo, this.cathedral.compo, this.progress]);
+        this.add([this.year, resources, this.cathedral.compo, this.progress]);
 
         for (let p of this.places) {        // add all places
             this.add(p.compo);
@@ -93,7 +92,16 @@ export default class GameScene extends SceneClass {
 
         // Event when clicking on any of the workshops
         on('clickPlace', (place: Place) => {
-            this.insidePlace.show(place, Number(this.year.text));
+
+            if (!this.insidePlace.visible) {
+                this.insidePlace.show(place, Number(this.year.text));
+            }
+
+        });
+
+        // Event when the hire or fire button is pressed
+        on('hireFire', (tilePosition: number) => {
+           this.hireFire(tilePosition);
         });
 
         // tick system setup
@@ -134,6 +142,36 @@ export default class GameScene extends SceneClass {
 
     render() {
         super.render();
+
+    }
+
+    // action when the hire or fire button is pressed
+    hireFire(tilePosition: number) {
+
+        let placeClicked = this.insidePlace.place;
+
+        if (placeClicked.name == 'Town') {
+
+            let destinationPlace: Place;
+
+            // define which type of worker it was
+            switch (this.places[1].workers[tilePosition].job) {
+                case 'baker':
+                    destinationPlace = this.places[3];              // add to bakery
+                    break;
+                case 'smith':
+                    destinationPlace = this.places[4];              // add to blacksmith
+                    break;
+                default:
+                    destinationPlace = this.places[5];              // add to masonry
+            }
+
+            // add worker to the destination
+            destinationPlace.workers[destinationPlace.nextEmptyWorkerSpot()] = placeClicked.workers[tilePosition];
+
+        }
+
+        placeClicked.workers[tilePosition] = new Worker('empty');       // remove worker from the place
 
     }
 

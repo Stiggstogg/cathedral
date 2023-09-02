@@ -22,7 +22,7 @@ export default class InsidePlace extends SpriteClass {
     private workers: AllWorkers;
     private workerButton: Text;
     private bookButton: Text;
-    private place: Place;
+    public place: Place;
 
     constructor(place: Place) {
 
@@ -121,20 +121,14 @@ export default class InsidePlace extends SpriteClass {
 
         this.book.update();     // book is not added as a child and therefore needs to be updated, as the multi column grid needs to update to align again in case the text changed
 
-        // check if the previous or next buttons need to be drawn
-        if (this.place.yearExist(Number(this.book.year[0].text) - 1)) {         // previous button
-            this.book.showPreviousButton = true;
-        }
-        else {
-            this.book.showPreviousButton = false;
-        }
+        this.workers.setWorkerTiles(this.place.workers, this.place.placeType);      // update the worker tiles (as they might change!)
 
-        if (this.place.yearExist(Number(this.book.year[0].text) + 1)) {         // previous button
-            this.book.showNextButton = true;
-        }
-        else {
-            this.book.showNextButton = false;
-        }
+        this.workers.update();      // needs to be updated to ensure that the grid also updates its position (is not a child of this class)
+
+        // check if the previous or next buttons need to be drawn
+        this.book.showPreviousButton = this.place.yearExist(Number(this.book.year[0].text) - 1);
+
+        this.book.showNextButton = this.place.yearExist(Number(this.book.year[0].text) + 1);
 
     }
 
@@ -204,6 +198,9 @@ export default class InsidePlace extends SpriteClass {
 
         }
 
+        // setup the worker page
+        this.workers.setWorkerTiles(this.place.workers, this.place.placeType);
+
     }
 
     hide() {
@@ -218,7 +215,7 @@ export default class InsidePlace extends SpriteClass {
         let relevantResources = this.place.resources;   // get the array with the relevant resources
         let resourceSymbols = ['🪙','🧲','🪨','🥖','⚒️','⛪'];
         let textLeft: string[] = [];                        // initialize
-        textLeft.push('Balance:', ' ', ' ', ' ', ' ', ' ', ' ');      // first title line and first entry of the resources line (empty)
+        textLeft.push('Balance:', '', '', '', '', '', '', '');      // first title line and first entry of the resources line (empty)
 
         for (let i = 0; i < relevantResources.length; i++) {    // write resource symbols
             if (relevantResources[i]) {
@@ -246,7 +243,7 @@ export default class InsidePlace extends SpriteClass {
 
         }
 
-        textLeft.push(' ', ' ', ' ', ' ', ' ', ' ');
+        textLeft.push('', '', '', '', '', '', '');
         textLeft.push('Overall:')
 
         for (let i = 0; i < entry.overallBalance.length; i++) {

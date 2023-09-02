@@ -6,6 +6,7 @@ import {
 } from 'kontra'
 import myFonts from "../helper/fonts.ts";
 import {gameOptions} from "../helper/gameOptions.ts";
+import Worker from "../sprites/Worker.ts";
 
 export default class Place {
 
@@ -17,11 +18,13 @@ export default class Place {
     private readonly fullYearbook: YearbookEntry[];
     public readonly placeType: string;
     public readonly resources: boolean[];
+    public workers: Worker[];
 
     constructor(x: number, y: number, name: string, emoji: string, emojiFont: number, placeType: string, resources: boolean[]) {
 
         // initialize variables
         this.fullYearbook = [];
+        this.workers = [];
 
         // store variables
         this.name = name;
@@ -56,8 +59,13 @@ export default class Place {
                 {name: '-', balance: [0, 0, 0, 0, 0, 0]},
             ],
             overallBalance: [0, 0, 0, 0, 0, 0],
-            events: ['No cathedral!', 'Nothing happened!']
+            events: ['No cathedral yet!']
         });
+
+        // set the empty workers
+        for (let i = 0; i < 5; i++) {
+            this.workers.push(new Worker('empty'));
+        }
 
     }
 
@@ -73,7 +81,60 @@ export default class Place {
     // action which happens when the place needs to be updated (on every tick)
     tick() {
 
-        //console.log('tick: ' + this.name);
+        console.log('tick: ' + this.name);
+
+        if (this.placeType == 'Town') {
+
+            // update all worker spots
+            for (let i = 0; i < this.workers.length; i++) {
+
+                // check if any of the workers is leaving and remove them
+                if (this.workers[i].name != 'Empty' && Math.random() <= gameOptions.workerLeaveChance) {
+                    this.workers[i] = new Worker('empty');
+                }
+
+                // add new workers in the empty spots: places 0 - 2 are always filled with one baker, smith and mason
+                // remaining places are filled by chance and might also be empty
+                if (this.workers[i].name == 'Empty') {
+
+                    switch (i) {
+                        case 0:
+                            this.workers[0] = new Worker('baker');
+                            break;
+                        case 1:
+                            this.workers[1] = new Worker('smith');
+                            break;
+                        case 2:
+                            this.workers[2] = new Worker('mason');
+                            break;
+                        default:
+                            if (Math.random() <= gameOptions.newWorkerChance) {
+
+                                let jobChance = Math.random();
+                                let job: string;
+
+                                if (jobChance < 0.33) {         // one third chance to be a baker
+                                    job = 'baker';
+                                }
+                                else if (jobChance < 0.66) {    // one third chance to be a smith
+                                    job = 'smith';
+                                }
+                                else {
+                                    job = 'mason';              // one third chance to be a mason
+                                }
+
+                                this.workers[i] = new Worker(job);
+                            }
+                    }
+
+                }
+
+            }
+
+        }
+        else {
+            // TODO: Continue here with adding the resource calculation!
+        }
 
     }
 
@@ -111,5 +172,36 @@ export default class Place {
 
     }
 
+    // get the number of workers (not counting the empty spaces)
+    numberOfWorkers(): number {
+
+        let count = 0;
+
+        for (let i = 0; i < this.workers.length; i++) {
+
+            if (this.workers[i].name != 'empty') {
+                count++;
+            }
+
+        }
+
+        return count;
+
+    }
+
+    // returns the next empty worker spot or -1 if there is no spot anymore free
+    nextEmptyWorkerSpot(): number {
+
+        for (let i = 0; i < this.workers.length; i++) {
+
+            if (this.workers[i].name == 'Empty') {
+                return i;
+            }
+
+        }
+
+        return -1;
+
+    }
 
 }

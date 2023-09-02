@@ -4,11 +4,11 @@ import {gameOptions} from "../helper/gameOptions.ts";
 
 export default class Worker {
 
-    public readonly name: string;
+    public name: string;
     public age: number;
     public wage!: number;
     public emoji!: string;
-    private readonly job: string;
+    public job: string;
     public jobEmoji!: string;
     public readonly production: number[];
     public readonly variation: number[];
@@ -17,7 +17,13 @@ export default class Worker {
     constructor(job: string) {
 
         this.job = job;
-        this.name = this.getRandom(names);                                      // get a random name
+        if (this.job == 'empty') {
+            this.name = 'Empty';
+        }
+        else {
+            this.name = this.getRandom(names);                                      // get a random name
+        }
+
         this.age = Math.round(random.generateUniform(gameOptions.age));         // get a random age
         this.setEmoji();                                                        // set face (based on age) and job emoji
         this.jobEmoji = '🥖';
@@ -84,6 +90,9 @@ export default class Worker {
         else if (this.job == 'bishop') {
             profile = [1, -1, -1, -1, -1, -1];
         }
+        else if (this.job == 'empty') {
+            profile = [-1, -1, -1, -1, -1, -1];
+        }
 
         // calculate the random production values and the variation (based on profile)
         let wageFactorCounter = 0;
@@ -121,14 +130,18 @@ export default class Worker {
         }
 
         // calculate wage (if many values are good -> high salary, if many values are bad -> low salary)
-        let wageFactor = wageFactorCounter/wageFactorCounterMax;
-        this.wage = Math.round(
-            (gameOptions.wage[0] + gameOptions.wage[1]) / 2
-            + wageFactor * (gameOptions.wage[1] - gameOptions.wage[0]) / 2
-            + random.generateUniform([-gameOptions.wage[2], gameOptions.wage[2]]));        // calculation: average wage + f * wage range + variation
+        if (this.job != 'empty') {
 
-        if (this.job != 'bishop') {
-            this.production[0] = -this.wage;
+            let wageFactor = wageFactorCounter/wageFactorCounterMax;
+            this.wage = Math.round(
+                (gameOptions.wage[0] + gameOptions.wage[1]) / 2
+                + wageFactor * (gameOptions.wage[1] - gameOptions.wage[0]) / 2
+                + random.generateUniform([-gameOptions.wage[2], gameOptions.wage[2]]));        // calculation: average wage + f * wage range + variation
+
+            if (this.job != 'bishop') {
+                this.production[0] = -this.wage;
+            }
+
         }
 
     }

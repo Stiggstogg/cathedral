@@ -45,4 +45,7 @@ export const gameOptions = {
     averageLifeExpectancy: 35,          // center of the sigmoid curve (1/(1+e^(-x))
     curveWidthLifeExpectancy: 5,        // width of the sigmoid curve
 
+    workerLeaveChance: 0.25,            // chance that a worker leaves the town
+    newWorkerChance: 0.25,               // chance that the last two spots are filled
+
 }
