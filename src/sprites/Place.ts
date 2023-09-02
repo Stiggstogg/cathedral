@@ -49,13 +49,13 @@ export default class Place {
         this.writeYearbookEntry({
             year: 1212,
             workerBalance: [
-                {name: '-', balance: [0, 0, 0, 0, 0]},
-                {name: '-', balance: [0, 0, 0, 0, 0]},
-                {name: '-', balance: [0, 0, 0, 0, 0]},
-                {name: '-', balance: [0, 0, 0, 0, 0]},
-                {name: '-', balance: [0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
             ],
-            overallBalance: [0, 0, 0, 0, 0],
+            overallBalance: [0, 0, 0, 0, 0, 0],
             events: ['No cathedral!', 'Nothing happened!']
         });
 
@@ -73,7 +73,7 @@ export default class Place {
     // action which happens when the place needs to be updated (on every tick)
     tick() {
 
-        console.log('tick: ' + this.name);
+        //console.log('tick: ' + this.name);
 
     }
 

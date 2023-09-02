@@ -161,7 +161,7 @@ export default class Book extends SpriteClass {
         this.textLeft = [];
         this.textRight = [];
         this.textLeftMulticol = [];
-        let numCol = 6;             // number of columns for the multicolumn text
+        let numCol = 7;             // number of columns for the multicolumn text
         let textProperties = {
             x: 0,
             y: 0,

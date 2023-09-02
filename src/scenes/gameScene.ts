@@ -9,6 +9,7 @@ import myFonts from "../helper/fonts.ts";
 import {gameOptions} from "../helper/gameOptions.ts";
 import Place from "../sprites/Place.ts";
 import InsidePlace from "../sprites/InsidePlace.ts";
+import Worker from "../sprites/Worker.ts";
 
 // Game scene: Main game scene
 export default class GameScene extends SceneClass {
@@ -60,13 +61,13 @@ export default class GameScene extends SceneClass {
 
         // places
         this.places.push(new Place(0.25, 0.75, 'Bishop', '✝️', 3, 'Bishop',
-            [true, false, false, false, false]));
+            [true, false, false, false, false, false]));
         this.places.push(new Place(0.37, 0.35, 'Bakery', '🥖', 3, 'Workshop',
-            [true, true, false, false, false]));
+            [true, true, false, false, false, false]));
         this.places.push(new Place(0.73, 0.35, 'Blacksmith', '⚒️', 3, 'Workshop',
-            [true, true, true, false, false]));
+            [true, true, true, false, true, false]));
         this.places.push(new Place(0.85, 0.75, 'Masonry', '🪨', 3, 'Workshop',
-            [true, true, true, true, true]));
+            [true, true, true, true, false, true]));
         this.cathedral = new Place(0.55, 0.63, 'Cathedral', '⛪', 4, 'Cathedral',
             [false, false, false, false, false]);
         this.town = new Place(0.05, 0.85, 'Town', '🏘️', 3, 'Town',
@@ -99,6 +100,7 @@ export default class GameScene extends SceneClass {
         this.tickLength = Math.round(gameOptions.yearLength * 1000 / this.places.length);           // calculate tick length
         this.lastTickTime = Date.now() - this.tickLength;                                                  // set the last tick to now - tick length to ensure it starts directly with the first tick
         this.nextTick = 0;                                                                             // set the next tick to 0
+
 
     }
 
