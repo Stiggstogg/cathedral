@@ -6,21 +6,3 @@ interface LineProperties {
     width: number,
     color: string
 }
-
-interface WorkerProperties {
-    name: string,
-    age: number,
-    reputation: string[]
-}
-
-interface YearbookEntry {
-    year: number,
-    workerBalance: workerEntry[],
-    overallBalance: number[]
-    events: string[]
-}
-
-interface WorkerEntry {
-    name: string,
-    balance: number[]
-}

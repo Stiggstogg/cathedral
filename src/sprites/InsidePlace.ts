@@ -212,7 +212,7 @@ export default class InsidePlace extends SpriteClass {
         let entry = this.place.readYearbookEntry(year);     // get the entry from the yearbook
 
         // left text
-        let relevantResources = this.place.resources;   // get the array with the relevant resources
+        let relevantResources = this.place.relevantResources;   // get the array with the relevant resources
         let resourceSymbols = ['🪙','🧲','🪨','🥖','⚒️','⛪'];
         let textLeft: string[] = [];                        // initialize
         textLeft.push('Balance:', '', '', '', '', '', '', '');      // first title line and first entry of the resources line (empty)

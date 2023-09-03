@@ -7,6 +7,8 @@ import {
 import myFonts from "../helper/fonts.ts";
 import {gameOptions} from "../helper/gameOptions.ts";
 import Worker from "../sprites/Worker.ts";
+import random from "../helper/Random.ts";
+import YearbookEntry from "./YearbookEntry.ts";
 
 export default class Place {
 
@@ -17,19 +19,21 @@ export default class Place {
     public readonly compo: Grid;
     private readonly fullYearbook: YearbookEntry[];
     public readonly placeType: string;
-    public readonly resources: boolean[];
+    public readonly relevantResources: boolean[];
+    private resources: number[];
     public workers: Worker[];
 
-    constructor(x: number, y: number, name: string, emoji: string, emojiFont: number, placeType: string, resources: boolean[]) {
+    constructor(x: number, y: number, name: string, emoji: string, emojiFont: number, placeType: string, relevantResources: boolean[], resources: number[]) {
 
         // initialize variables
         this.fullYearbook = [];
         this.workers = [];
+        this.resources = resources;
 
         // store variables
         this.name = name;
         this.placeType = placeType;
-        this.resources = resources;
+        this.relevantResources = relevantResources;
         this.emoji = emoji;
 
         // create elements of the composition (picture and text)
@@ -79,7 +83,7 @@ export default class Place {
     }
 
     // action which happens when the place needs to be updated (on every tick)
-    tick() {
+    tick(year: number) {
 
         console.log('tick: ' + this.name);
 
@@ -132,8 +136,76 @@ export default class Place {
             }
 
         }
+        else if (this.placeType == 'Market') {
+
+        }
         else {
-            // TODO: Continue here with adding the resource calculation!
+
+            // create a new yearbook entry (everything empty)
+            let yearbookEntry = new YearbookEntry();
+            yearbookEntry.year = year;
+            let resourceMissing = [false, false, false, false, false, false];       // the value will be changed to true if a resource is missing. This is used later to write the "events" in the yearbook
+
+            for (let i = 0; i < this.workers.length; i++) {             // go through every worker and calculate production
+
+                let tempWorker = this.workers[i];
+                let enoughResources = true;                             // set the boolean which checks if there are enough resources!
+                let tempProduction = [0, 0, 0, 0, 0, 0];
+
+                // write the name of the worker into the yearbook
+                if (tempWorker.name == 'Empty') {
+                    yearbookEntry.workerBalance[i].name = '-';
+                }
+                else {
+                    yearbookEntry.workerBalance[i].name = tempWorker.name;
+                }
+
+                // go through each resource, calculate the temporary production and check if any resource is missing
+                for (let j = 0; j < tempWorker.production.length; j++) {
+                    if (this.relevantResources[j]) {                            // only calculate it for the relevant resources
+
+                        // calculate the production based on the production base value and a random variation
+                        tempProduction[j] = tempWorker.production[j] + random.generateUniform([-tempWorker.variation[j], -tempWorker.variation[j]]);
+
+                        // check if enough resources are available if the production is negative
+                        if (tempProduction[j] < 0 && this.resources[j] < Math.abs(tempProduction[j])) {
+
+                            resourceMissing[j] = true;
+                            enoughResources = false;
+
+                        }
+                    }
+                }
+
+                // update the resources and set the
+                if (enoughResources) {
+
+                    for (let j = 0; j < tempWorker.production.length; j++) {
+                        if (this.relevantResources[j]) {                            // only set it for the relevant resources
+
+                            this.resources[j] = this.resources[j] + tempProduction[j];
+                            yearbookEntry.overallBalance[j] = yearbookEntry.overallBalance[j] + tempProduction[j];
+
+                        }
+                    }
+
+                    // write the yearbook entry of this worker
+                    yearbookEntry.workerBalance[i].balance = tempProduction;
+
+                }
+
+            }
+
+            // write the events in the yearbook
+            for (let i = 0; i < resourceMissing.length; i++) {
+                if (resourceMissing[i]) {
+                    yearbookEntry.events.push(gameOptions.resourceMissingText[i]);
+                }
+
+            }
+
+            this.writeYearbookEntry(yearbookEntry);
+
         }
 
     }

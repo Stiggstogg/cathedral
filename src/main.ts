@@ -1,5 +1,4 @@
 // imports
-import './style.css'
 import {
     GameLoop,
     init,

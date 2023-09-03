@@ -100,7 +100,6 @@ export default class Worker {
         let minMaxVar: number[] = [];     // array with minimum, maximum and variation
         let reputation: string[] = [];      // array with the reputations
 
-
         for (let i = 0; i < profile.length; i++) {
 
             if (profile[i] > -1) {

@@ -48,4 +48,13 @@ export const gameOptions = {
     workerLeaveChance: 0.25,            // chance that a worker leaves the town
     newWorkerChance: 0.25,               // chance that the last two spots are filled
 
+    resourceMissingText: [
+        'Not enough money',             // 0: not enough money
+        'Not enough iron',              // 1: not enough iron
+        'Not enough stone',             // 2: not enough stone
+        'Not enough bread',             // 3: not enough bread
+        'Not enough tools',             // 4: not enough tools
+        '',                             // 5: not enough cathedral (not used)
+    ]
+
 }
