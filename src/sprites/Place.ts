@@ -71,6 +71,11 @@ export default class Place {
             this.workers.push(new Worker('empty'));
         }
 
+        // if the place is the bishop place, add the bishop
+        if (this.placeType == 'Bishop') {
+            this.workers[0] = new Worker('bishop');
+        }
+
     }
 
     // action which happens if the image or the description is clicked
@@ -86,6 +91,15 @@ export default class Place {
     tick(year: number) {
 
         console.log('tick: ' + this.name);
+
+        // increase the age of all workers
+        for (let i = 0; i < this.workers.length; i++) {
+
+            if (this.workers[i].name != 'Empty') {
+                this.workers[i].birthday();
+            }
+
+        }
 
         if (this.placeType == 'Town') {
 
@@ -153,7 +167,7 @@ export default class Place {
                 let tempProduction = [0, 0, 0, 0, 0, 0];
 
                 // write the name of the worker into the yearbook
-                if (tempWorker.name == 'Empty') {
+                if (tempWorker.job == 'empty') {
                     yearbookEntry.workerBalance[i].name = '-';
                 }
                 else {
@@ -165,7 +179,7 @@ export default class Place {
                     if (this.relevantResources[j]) {                            // only calculate it for the relevant resources
 
                         // calculate the production based on the production base value and a random variation
-                        tempProduction[j] = tempWorker.production[j] + random.generateUniform([-tempWorker.variation[j], -tempWorker.variation[j]]);
+                        tempProduction[j] = Math.round(tempWorker.production[j] + random.generateUniform([-tempWorker.variation[j], tempWorker.variation[j]]));
 
                         // check if enough resources are available if the production is negative
                         if (tempProduction[j] < 0 && this.resources[j] < Math.abs(tempProduction[j])) {
@@ -204,6 +218,30 @@ export default class Place {
 
             }
 
+            // check if people die
+            for (let i = 0; i < this.workers.length; i++) {
+                if (this.workers[i].job != 'empty' && this.workers[i].dies() && yearbookEntry.events.length < 9) {      // check for each non empty worker if they die and if there are not yet too many events (to not overfill the yearbook)
+
+
+
+                    if (this.placeType == 'Bishop') {
+                        yearbookEntry.events.push('Bishop ' + this.workers[i].name + ' passed away ☠️!');  // write yearbook entry
+                        this.workers[i] = new Worker('bishop');                      // replace with a new bishop
+                        yearbookEntry.events.push('Welcome Bishop ' + this.workers[i].name + '!');  // write yearbook entry
+                    }
+                    else {
+                        yearbookEntry.events.push(this.workers[i].name + ' died ☠️!');  // write yearbook entry
+                        this.workers[i] = new Worker('empty');                      // replace with empty worker
+                    }
+
+
+
+                }
+
+
+            }
+
+            // write the yearbook entry into the yearbook
             this.writeYearbookEntry(yearbookEntry);
 
         }
@@ -251,7 +289,7 @@ export default class Place {
 
         for (let i = 0; i < this.workers.length; i++) {
 
-            if (this.workers[i].name != 'empty') {
+            if (this.workers[i].job != 'empty') {
                 count++;
             }
 
@@ -266,7 +304,7 @@ export default class Place {
 
         for (let i = 0; i < this.workers.length; i++) {
 
-            if (this.workers[i].name == 'Empty') {
+            if (this.workers[i].job == 'empty') {
                 return i;
             }
 

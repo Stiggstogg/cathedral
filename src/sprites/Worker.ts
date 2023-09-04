@@ -24,7 +24,14 @@ export default class Worker {
             this.name = this.getRandom(names);                                      // get a random name
         }
 
-        this.age = Math.round(random.generateUniform(gameOptions.age));         // get a random age
+        // get a random age
+        if (this.job == 'bishop') {
+            this.age = Math.round(random.generateUniform(gameOptions.ageBishop))    // different age for the bishop (cannot be a child)
+        }
+        else {
+            this.age = Math.round(random.generateUniform(gameOptions.age));
+        }
+
         this.setEmoji();                                                        // set face (based on age) and job emoji
         this.jobEmoji = '🥖';
 

@@ -228,15 +228,25 @@ export default class InsidePlace extends SpriteClass {
 
         for (let i = 0; i < entry.workerBalance.length; i++) {      // write worker balance
 
-            textLeft.push(entry.workerBalance[i].name);
+            // keep the line empty if there was no worker in the bishop place
+            if (this.place.placeType == 'Bishop' && entry.workerBalance[i].name == '-') {
 
-            for (let j = 0; j < entry.workerBalance[i].balance.length; j++) {
+                textLeft.push('','', '', '', '', '', '');
 
-                if (relevantResources[j]) {
-                    textLeft.push(String(entry.workerBalance[i].balance[j]));
-                }
-                else {
-                    textLeft.push(' ');
+            }
+            else {
+
+                textLeft.push(entry.workerBalance[i].name);
+
+                for (let j = 0; j < entry.workerBalance[i].balance.length; j++) {
+
+                    if (relevantResources[j]) {
+                        textLeft.push(String(entry.workerBalance[i].balance[j]));
+                    }
+                    else {
+                        textLeft.push(' ');
+                    }
+
                 }
 
             }

@@ -238,7 +238,6 @@ export default class Book extends SpriteClass {
 
         this.textLeftMulticolGrid.update();     // multicolumn grid needs to be updated to align the columns if the text changes
 
-
     }
 
     render() {
