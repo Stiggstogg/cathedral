@@ -42,6 +42,11 @@ export const gameOptions = {
         ['Lazy', 'Hard working'],       // 11: cathedral production (mason)
     ],
 
+    marketPriceMatrix: [
+        [10, 30],                       // 0: price for iron
+        [10, 30]                        // 1: price for stone
+    ],
+
     averageLifeExpectancy: 35,          // center of the sigmoid curve (1/(1+e^(-x))
     curveWidthLifeExpectancy: 5,        // width of the sigmoid curve
 

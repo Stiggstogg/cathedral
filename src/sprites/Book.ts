@@ -4,11 +4,12 @@ import {
     SpriteClass,
     Grid,
     emit,
-    track
+    track, GameObject
 } from 'kontra'
 import {gameOptions} from "../helper/gameOptions.ts";
 import myFonts from "../helper/fonts.ts";
 import Line from "./Line.ts"
+import Button from "./Button.ts";
 
 export default class Book extends SpriteClass {
 
@@ -17,19 +18,20 @@ export default class Book extends SpriteClass {
     public readonly page: Sprite;
     private readonly lineSeparator: Line;
     public year: Text[];
+    private showYear: boolean;
     private showLinesLeft: boolean;
     private showLinesRight: boolean;
     private readonly linesLeft: Grid;
     private readonly linesRight: Grid;
     private showTextLeft: boolean;
-    private showTextLeftMulticol: boolean;
     private showTextRight: boolean;
-    private textLeft: Text[];
+    private showBuyButtons: boolean;
     private textRight: Text[];
-    private textLeftMulticol: Text[];
-    private textLeftGrid: Grid;
+    private textLeft: Text[];
+    public buyButtons: GameObject[];
     private textRightGrid: Grid;
-    private textLeftMulticolGrid: Grid;
+    private textLeftGrid: Grid;
+    private buyButtonsGrid: Grid;
     public showNextButton: boolean;
     public showPreviousButton: boolean;
     private nextButton: Text;
@@ -45,11 +47,12 @@ export default class Book extends SpriteClass {
 
         // initialize variables
         this.year = [];
+        this.showYear = true;
         this.showLinesLeft = true;
         this.showLinesRight = true;
-        this.showTextLeft = false;
         this.showTextRight = true;
-        this.showTextLeftMulticol = true;
+        this.showTextLeft = true;
+        this.showBuyButtons = true;
         this.showNextButton = true;
         this.showPreviousButton = true;
 
@@ -113,7 +116,7 @@ export default class Book extends SpriteClass {
         }
 
         // add all childern (barebone of the book without lines and text) to the sprite
-        this.addChild([this.shadow, this.cover, this.page, this.lineSeparator, ...this.year]);
+        this.addChild([this.shadow, this.cover, this.page, this.lineSeparator]);
 
         // create lines for writing
         let separateLinesLeft: Line[] = [];
@@ -158,10 +161,9 @@ export default class Book extends SpriteClass {
         });
 
         // create the texts
-        this.textLeft = [];
         this.textRight = [];
-        this.textLeftMulticol = [];
-        let numCol = 7;             // number of columns for the multicolumn text
+        this.textLeft = [];
+        let numCol = 7;             // number of columns for the left text
         let textProperties = {
             x: 0,
             y: 0,
@@ -171,24 +173,16 @@ export default class Book extends SpriteClass {
 
         for (let i = 0; i < lineNum; i++) {     // create the text lines
 
-            this.textLeft.push(Text(textProperties));
             this.textRight.push(Text(textProperties));
 
             for (let j = 0; j < numCol; j++) {
-                this.textLeftMulticol.push(Text(textProperties));
+                this.textLeft.push(Text(textProperties));
             }
         }
 
         let textY = this.linesLeft.y - Number(this.linesLeft.rowGap) * 0.75;
         let textRowGap = Number(this.linesLeft.rowGap) - this.textLeft[0].height;
         let textColGap = gameOptions.gameWidth * 0.01;
-
-        this.textLeftGrid = Grid( {
-            x: this.linesLeft.x,
-            y: textY,
-            rowGap: textRowGap,
-            children: this.textLeft
-        });
 
         this.textRightGrid = Grid( {
             x: this.linesRight.x,
@@ -197,7 +191,7 @@ export default class Book extends SpriteClass {
             children: this.textRight
         });
 
-        this.textLeftMulticolGrid = Grid( {
+        this.textLeftGrid = Grid( {
             x: this.linesLeft.x,
             y: textY,
             rowGap: textRowGap,
@@ -205,7 +199,56 @@ export default class Book extends SpriteClass {
             numCols: numCol,
             flow: 'grid',
             justify: ['start', 'end', 'end', 'end', 'end', 'end', 'end'],
-            children: this.textLeftMulticol
+            children: this.textLeft
+        });
+
+        // create the buy buttons and texts
+        let buttonRowGap = gameOptions.gameHeight * 0.04;
+        let buttonColumnGap = gameOptions.gameWidth * 0.01;
+
+        this.buyButtons = [];
+        let buyAmount = [
+            10,
+            100,
+            10,
+            100
+        ];
+
+        let buyResourceType = [1, 1, 2, 2];     // 1: Iron, 2: Stone
+
+        let buyResourceEmoji = '🧲';
+
+        for (let i = 0; i < 4; i++) {
+
+
+
+            this.buyButtons.push(new Button(
+                0, 0, 'Buy ' + String(buyAmount[i]) + buyResourceEmoji, () => {
+                    emit('buy', buyResourceType[i], buyAmount[i]);
+                }
+            ))
+
+            this.buyButtons.push(Text({
+                text: 'for 100',
+                ...myFonts[2],
+                color: 'black'
+            }));
+
+            if (i == 1) {
+                this.buyButtons.push(Text({text: ''}), Text({text: ''}));     // gap between the two resource types
+                buyResourceEmoji = '🪨';                                                        // change emoji
+            }
+        }
+
+        this.buyButtonsGrid = Grid( {
+            x: this.linesRight.x + gameOptions.gameWidth * 0.1,
+            y: this.linesRight.y - gameOptions.gameHeight * 0.05,
+            rowGap: buttonRowGap,
+            colGap: buttonColumnGap,
+            numCols: 2,
+            flow: 'grid',
+            justify: 'center',
+            children: this.buyButtons
         });
 
         // next and previous buttons
@@ -236,12 +279,19 @@ export default class Book extends SpriteClass {
     update() {
         super.update();
 
-        this.textLeftMulticolGrid.update();     // multicolumn grid needs to be updated to align the columns if the text changes
+        this.textLeftGrid.update();     // left grid needs to be updated to align the columns if the text changes
 
     }
 
     render() {
         super.render();
+
+        if (this.showYear) {           // render the left lines only if they are shown
+            for (let i = 0; i < this.year.length; i++) {
+                this.year[i].render();
+            }
+        }
+
 
         if (this.showLinesLeft) {           // render the left lines only if they are shown
             this.linesLeft.render();
@@ -251,16 +301,13 @@ export default class Book extends SpriteClass {
             this.linesRight.render();
         }
 
-        if (this.showTextLeft) {           // render the left text only if they are shown
-            this.textLeftGrid.render();
-        }
 
         if (this.showTextRight) {           // render the right text only if they are shown
             this.textRightGrid.render();
         }
 
-        if (this.showTextLeftMulticol) {           // render the left multicolumn text only if they are shown
-            this.textLeftMulticolGrid.render();
+        if (this.showTextLeft) {           // render the left text only if they are shown
+            this.textLeftGrid.render();
         }
 
         if (this.showPreviousButton) {           // render the button only if shown
@@ -271,11 +318,15 @@ export default class Book extends SpriteClass {
             this.nextButton.render();
         }
 
+        if (this.showBuyButtons) {
+            this.buyButtonsGrid.render();
+        }
+
     }
 
     // setup the pages
-    setupPages(year: number, linesLeft: boolean, linesRight: boolean,
-               textLeft: boolean, textRight: boolean, textLeftMulticol: boolean,
+    setupPages(year: number, showYear: boolean, linesLeft: boolean, linesRight: boolean,
+               textLeft: boolean, textRight: boolean, buyButtons: boolean,
                contentLeft: string[], contentRight: string[]) {
 
         // set year
@@ -284,27 +335,13 @@ export default class Book extends SpriteClass {
         }
 
         // define what should be shown
+        this.showYear = showYear;
         this.showLinesLeft = linesLeft;
         this.showLinesRight = linesRight;
-        this.showTextLeft = textLeft;
         this.showTextRight = textRight;
-        this.showTextLeftMulticol = textLeftMulticol;
+        this.showTextLeft = textLeft;
+        this.showBuyButtons = buyButtons;
 
-
-        // fill the pages with content
-        if (this.showTextLeft) {
-            for (let i = 0; i < this.textLeft.length; i++) {
-
-                if (i < contentLeft.length) {
-                    this.textLeft[i].text = contentLeft[i];
-                }
-                else {
-                    this.textLeft[i].text = '';
-                }
-
-            }
-
-        }
 
         if (this.showTextRight) {
             for (let i = 0; i < this.textRight.length; i++) {
@@ -319,15 +356,15 @@ export default class Book extends SpriteClass {
             }
         }
 
-        if (this.showTextLeftMulticol) {
+        if (this.showTextLeft) {
 
-            for (let i = 0; i < this.textLeftMulticol.length; i++) {
+            for (let i = 0; i < this.textLeft.length; i++) {
 
                 if (i < contentLeft.length) {
-                    this.textLeftMulticol[i].text = contentLeft[i];
+                    this.textLeft[i].text = contentLeft[i];
                 }
                 else {
-                    this.textLeftMulticol[i].text = '';
+                    this.textLeft[i].text = '';
                 }
 
             }

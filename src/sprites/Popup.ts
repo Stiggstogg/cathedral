@@ -78,8 +78,6 @@ export default class Popup extends SpriteClass {
     }
 
     clickButton() {
-        console.log(this);
-
         this.visible = false;
     }
 

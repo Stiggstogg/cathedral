@@ -1,7 +1,7 @@
 import {
     Text,
     SpriteClass,
-    track, on
+    track, on, emit
 } from 'kontra'
 import {gameOptions} from "../helper/gameOptions.ts";
 import myFonts from "../helper/fonts.ts";
@@ -18,6 +18,7 @@ export default class InsidePlace extends SpriteClass {
     public bookButtonVisible: boolean;
     public title: Text;
     public cancelButton: Text;
+    public helpButton: Text;
     private book: Book;
     private workers: AllWorkers;
     private workerButton: Text;
@@ -67,11 +68,23 @@ export default class InsidePlace extends SpriteClass {
             onDown: () => {this.hide();}
         });
 
-        track(this.cancelButton);
+        // help button
+        this.helpButton = Text({
+            x: this.cancelButton.x,
+            y: gameOptions.gameHeight - gameOptions.gameHeight * 0.08,
+            text: '❓',
+            ...myFonts[6],
+            anchor: {x: 0.5, y: 0.5},
+            onDown: () => {
+                emit('showHelp', this.place);
+            }
+        });
 
-        // add all elements to the scene
+        track(this.cancelButton, this.helpButton);
+
+        // add all elements to the object as a child
         this.addChild([
-            this.title, this.cancelButton
+            this.title, this.cancelButton, this.helpButton
         ]);
 
         // worker button
@@ -130,6 +143,10 @@ export default class InsidePlace extends SpriteClass {
 
         this.book.showNextButton = this.place.yearExist(Number(this.book.year[0].text) + 1);
 
+        if (this.place.placeType == 'Market') {         // update the market page to ensure the current resources are visible
+            this.fillPageMarket();
+        }
+
     }
 
     render() {
@@ -187,6 +204,8 @@ export default class InsidePlace extends SpriteClass {
             this.workersVisible = false;
             this.workerButtonVisible = false;
             this.bookButtonVisible = false;
+
+            this.fillPageMarket();
 
         }
         else if (this.place.placeType == 'Town') {
@@ -278,8 +297,31 @@ export default class InsidePlace extends SpriteClass {
 
         }
 
-        this.book.setupPages(entry.year, true, true,
-            false, true, true, textLeft, textRight);
+        this.book.setupPages(entry.year,true,true, true,
+            true, true, false, textLeft, textRight);
+
+    }
+
+    fillPageMarket() {
+
+        // left text
+        let textLeft = [
+            'Your Resources:', '', '', '', '', '', '',
+            '', '🪙:', String(this.place.resources[0]), '', '', '', '',
+            '', '🧲:', String(this.place.resources[1]), '', '', '', '',
+            '', '🪨:', String(this.place.resources[2]), '', '', '', '',
+            '', '🥖:', String(this.place.resources[3]), '', '', '', '',
+            '', '⚒️:', String(this.place.resources[4]), '', '', '', '',
+        ]
+
+        this.book.setupPages(1212, false, true, false,
+            true, false, true, textLeft, ['']);
+
+        // update price next to buttons
+        this.book.buyButtons[1].text = 'for ' + String(this.place.prices[0]) + '🪙';
+        this.book.buyButtons[3].text = 'for ' + String(this.place.prices[0] * 10) + '🪙';
+        this.book.buyButtons[7].text = 'for ' + String(this.place.prices[1]) + '🪙';
+        this.book.buyButtons[9].text = 'for ' + String(this.place.prices[1] * 10) + '🪙';
 
     }
 

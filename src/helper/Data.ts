@@ -10,3 +10,12 @@ export const names = [
 // list of emojis which can be used for the workers
 export const emojiYoung = ['🧒', '👦'];
 export const emojiOld = ['🧑', '👱', '👨', '🧔', '🧔‍♂️', '👨‍🦰', '👨‍🦲', '🧑‍🦱', '👱‍♂️'];
+
+export const helpTexts = [
+    'Market',
+    'Town',
+    'Bishop',
+    'Bakery',
+    'Blacksmith',
+    'Masonry',
+]

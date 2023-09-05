@@ -20,15 +20,19 @@ export default class Place {
     private readonly fullYearbook: YearbookEntry[];
     public readonly placeType: string;
     public readonly relevantResources: boolean[];
-    private resources: number[];
+    public resources: number[];
     public workers: Worker[];
+    public prices: number[];
+    public helpString: string;
 
-    constructor(x: number, y: number, name: string, emoji: string, emojiFont: number, placeType: string, relevantResources: boolean[], resources: number[]) {
+    constructor(x: number, y: number, name: string, emoji: string, emojiFont: number, placeType: string, relevantResources: boolean[], resources: number[], helpString: string) {
 
         // initialize variables
         this.fullYearbook = [];
         this.workers = [];
         this.resources = resources;
+        this.prices = [Math.round(random.generateUniform(gameOptions.marketPriceMatrix[0])), Math.round(random.generateUniform(gameOptions.marketPriceMatrix[1]))]; // only used for the market
+        this.helpString = helpString;
 
         // store variables
         this.name = name;
@@ -151,6 +155,9 @@ export default class Place {
 
         }
         else if (this.placeType == 'Market') {
+
+            // generate new market prices
+            this.prices = [Math.round(random.generateUniform(gameOptions.marketPriceMatrix[0])), Math.round(random.generateUniform(gameOptions.marketPriceMatrix[1]))];
 
         }
         else {
