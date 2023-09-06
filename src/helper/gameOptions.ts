@@ -8,23 +8,23 @@ export const gameOptions = {
     gameHeight: 0,
 
     // minimum, maximum and variation numbers (where applicable)
-    age: [10, 40],
+    age: [10, 30],
     wage: [10, 30, 5],
     ageBishop: [20, 30],
 
     productionMatrix: [
         [0, 0, 0],          // 0: money consumption (not used, will be calculated based on wage)
-        [20, 50, 5],        // 1: money production (bishop)
-        [-10, -5, 3],       // 2: iron consumption (smith)
+        [400, 600, 100],    // 1: money production (bishop)
+        [-15, -5, 3],       // 2: iron consumption (smith)
         [0, 0, 0],          // 3: iron production (not used!)
-        [-10, -5, 3],       // 4: stone consumption (mason)
+        [-20, -10, 3],       // 4: stone consumption (mason)
         [0, 0, 0],          // 5: stone production (not used!)
-        [-10, -5, 3],       // 6: bread consumption (smith, mason)
-        [20, 35, 5],        // 7: bread production (baker)
+        [-15, -5, 3],       // 6: bread consumption (smith, mason)
+        [10, 30, 5],        // 7: bread production (baker)
         [-10, -5, 3],        // 8: tool consumption (mason)
-        [20, 35, 5],       // 9: tool production (smith)
-        [0, 0, 0],          // 10: cathedral consumption (not used!)
-        [5, 55, 7],         // 11: cathedral production (mason)
+        [10, 20, 5],         // 9: tool production (smith)
+        [0, 0, 0],           // 10: cathedral consumption (not used!)
+        [20, 60, 7],         // 11: cathedral production (mason)
     ],
 
     reputationMatrix: [

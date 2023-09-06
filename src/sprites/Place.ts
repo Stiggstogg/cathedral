@@ -188,6 +188,7 @@ export default class Place {
                         // calculate the production based on the production base value and a random variation
                         tempProduction[j] = Math.round(tempWorker.production[j] + random.generateUniform([-tempWorker.variation[j], tempWorker.variation[j]]));
 
+
                         // check if enough resources are available if the production is negative
                         if (tempProduction[j] < 0 && this.resources[j] < Math.abs(tempProduction[j])) {
 

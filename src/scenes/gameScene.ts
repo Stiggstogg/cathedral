@@ -45,9 +45,9 @@ export default class GameScene extends SceneClass {
         // help text and button
         this.helpString = 'Welcome to the 13th century, a time when magnificent cathedrals adorn the skyline of every major city, except yours.\n' +
             'You\'ve been appointed as the CATHEDRAL MASTER BUILDER by the bishop to complete the construction of the cathedral before the century\'s end.\n\n' +
-            'The bishop provides money for your project. Visit the TOWN to recruit skilled workers for your BACKERY, BLACKSMITH, and MASONRY. ' +
+            'The bishop provides money for your project. Visit the TOWN to recruit skilled workers for your BAKERY, BLACKSMITH, and MASONRY. ' +
             'Procure iron and stone from the MARKET.\n' +
-            'For detailed guidance and information, explore each location.';
+            'For detailed guidance and information, explore each location.'
 
         this.helpButton = Text({
             x: gameOptions.gameWidth * 0.96,
@@ -188,8 +188,22 @@ export default class GameScene extends SceneClass {
             this.resourcesText.children[i*2 + 1].text = String(this.resources[i]);
         }
 
+        // check if the game was finished
+        if (this.resources[5] >= 10000 && Number(this.year.text) <= 1300) {
+
+            this.popup.show('Congratulations!\n\nYou\'ve completed the cathedral before the 13th century\'s close (' + this.year.text +  '), restoring your city\'s glory and earning the bishop\'s pride!');
+
+        }
+        else if (this.resources[5] >= 10000) {
+
+            this.popup.show('The cathedral is finally completed, but alas, it\'s a bit too late (' + this.year.text +  ').\n\nThe 13th century has already come to an end, and other cities have stolen the spotlight with their faster progress.');
+
+        }
+
         // update the cathedral progress
         this.progressText.text = String(this.resources[5]) + ' / 10000';
+
+
 
     }
 
