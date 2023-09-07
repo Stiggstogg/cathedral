@@ -53,7 +53,7 @@ export default class InsidePlace extends SpriteClass {
         // create title
         this.title = Text({
             x: this.width / 2,
-            y: gameOptions.gameHeight * 0.0005,
+            y: gameOptions.gameHeight * 0.02,
             text: 'Title',
             ...myFonts[6]
         });
@@ -61,10 +61,9 @@ export default class InsidePlace extends SpriteClass {
         // cancel button
         this.cancelButton = Text({
             x: gameOptions.gameWidth * 0.96,
-            y: gameOptions.gameWidth * 0.02,
+            y: gameOptions.gameWidth * 0.01,
             text: '✖️',
             ...myFonts[6],
-            anchor: {x: 0.5, y: 0.5},
             onDown: () => {this.hide();}
         });
 

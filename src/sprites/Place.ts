@@ -14,7 +14,7 @@ export default class Place {
 
     public readonly name: string;
     public readonly emoji: string;
-    private readonly description: Text;
+    public readonly description: Text;
     public readonly image: Text;
     public readonly compo: Grid;
     private readonly fullYearbook: YearbookEntry[];
@@ -31,7 +31,7 @@ export default class Place {
         this.fullYearbook = [];
         this.workers = [];
         this.resources = resources;
-        this.prices = [Math.round(random.generateUniform(gameOptions.marketPriceMatrix[0])), Math.round(random.generateUniform(gameOptions.marketPriceMatrix[1]))]; // only used for the market
+        this.prices = [];
         this.helpString = helpString;
 
         // store variables
@@ -50,34 +50,26 @@ export default class Place {
             y: gameOptions.gameHeight * y,
             anchor: {x: 0.5, y: 0.5},
             justify: 'center',
+            rowGap: gameOptions.gameHeight * 0.01,
             children: [this.image, this.description]
         });
 
         // track the pointer down events
         track(this.description, this.image);
 
-        // set first yearbook entry
-        this.writeYearbookEntry({
-            year: 1212,
-            workerBalance: [
-                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
-                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
-                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
-                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
-                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
-            ],
-            overallBalance: [0, 0, 0, 0, 0, 0],
-            events: ['No cathedral yet!']
-        });
-
-        // set the empty workers
+        // set all workers to empty
         for (let i = 0; i < 5; i++) {
             this.workers.push(new Worker('empty'));
         }
 
-        // if the place is the bishop place, add the bishop
-        if (this.placeType == 'Bishop') {
-            this.workers[0] = new Worker('bishop');
+        this.reset();                           // reset everything
+
+    }
+
+    update() {
+
+        if (this.placeType == 'Workshop' && this.name != 'Bishop') {
+            this.description.text = this.name + ' (' + String(this.numberOfWorkers()) + '/5)';
         }
 
     }
@@ -319,6 +311,40 @@ export default class Place {
         }
 
         return -1;
+
+    }
+
+    reset() {
+
+        // empty the yearbook
+        this.fullYearbook.length = 0;
+
+        // set first yearbook entry
+        this.writeYearbookEntry({
+            year: 1212,
+            workerBalance: [
+                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
+                {name: '-', balance: [0, 0, 0, 0, 0, 0]},
+            ],
+            overallBalance: [0, 0, 0, 0, 0, 0],
+            events: ['No cathedral yet!']
+        });
+
+        // set the prices for iron and stone (only used for the market
+        this.prices = [Math.round(random.generateUniform(gameOptions.marketPriceMatrix[0])), Math.round(random.generateUniform(gameOptions.marketPriceMatrix[1]))];
+
+        // set the empty workers
+        for (let i = 0; i < 5; i++) {
+            this.workers[i] = new Worker('empty');
+        }
+
+        // if the place is the bishop place, add the bishop
+        if (this.placeType == 'Bishop') {
+            this.workers[0] = new Worker('bishop');
+        }
 
     }
 

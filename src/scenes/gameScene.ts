@@ -13,37 +13,45 @@ import InsidePlace from "../sprites/InsidePlace.ts";
 import Worker from "../sprites/Worker.ts";
 import Popup from "../sprites/Popup.ts";
 import {helpTexts} from "../helper/Data.ts";
+import YearProgress from "../sprites/YearProgress.ts";
 
 // Game scene: Main game scene
 export default class GameScene extends SceneClass {
 
+    private gameState: number;
     private resourcesText!: Grid;
-    private resources!: number[];
-    private readonly places: Place[];
+    private resources: number[];
+    private places: Place[];
     private cathedral!: Place;
     private year!: Text;
     private progressText!: Text;
     private tickLength!: number;        // length of one tick in ms
     private lastTickTime!: number;      // time when the last tick happened
     private nextTick!: number;           // number of the next tick
+    private newYearTime: number;        // time when a new year started
     private insidePlace!: InsidePlace;
     private popup!: Popup;
     private helpString!: string;
     private helpButton!: Text;
+    private yearProgress!: YearProgress;
 
     constructor(id: string) {
 
         super({id: id});
 
-        // initialize variables
+        // initialize all variables
+        this.gameState = -1;
+        this.resources = [0, 0, 0, 0, 0, 0];
         this.places = [];
+        this.newYearTime = 0;
+        this.lastTickTime = 0;
 
     }
 
     onShow() {
 
         // help text and button
-        this.helpString = 'Welcome to the 13th century, a time when magnificent cathedrals adorn the skyline of every major city, except yours.\n' +
+        this.helpString = 'Welcome to the 13th century, a time when magnificent cathedrals adorn the skyline of every major city, except yours.\n\n' +
             'You\'ve been appointed as the CATHEDRAL MASTER BUILDER by the bishop to complete the construction of the cathedral before the century\'s end.\n\n' +
             'The bishop provides money for your project. Visit the TOWN to recruit skilled workers for your BAKERY, BLACKSMITH, and MASONRY. ' +
             'Procure iron and stone from the MARKET.\n' +
@@ -64,6 +72,9 @@ export default class GameScene extends SceneClass {
 
         // year
         this.year = Text({text: '1213', ...myFonts[0], x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.1});
+
+        // year progress
+        this.yearProgress = new YearProgress(this.year.x - this.year.width / 2, this.year.y + gameOptions.gameHeight * 0.05, this.year.width);
 
         // resources text
         this.resourcesText = Grid({
@@ -86,9 +97,6 @@ export default class GameScene extends SceneClass {
                 Text({text: '0', ...myFonts[2]})
                 ]
         });
-
-        // initialize resources
-        this.resources = [0, 0, 0, 0, 0, 0];       // current resources
 
         // places
         this.places.push(new Place(0.05, 0.55, 'Market', '🧺', 3, 'Market',
@@ -116,7 +124,7 @@ export default class GameScene extends SceneClass {
         this.popup = new Popup();
 
         // add elements to scene
-        this.add([this.year, this.resourcesText, this.cathedral.compo, this.progressText, this.helpButton]);
+        this.add([this.year, this.yearProgress, this.resourcesText, this.cathedral.compo, this.progressText, this.helpButton]);
 
         for (let p of this.places) {        // add all places
             this.add(p.compo);
@@ -124,10 +132,10 @@ export default class GameScene extends SceneClass {
 
         this.add([this.insidePlace, this.popup]);   // need to be added at the end to ensure it is on top
 
-        // Event when clicking on any of the workshops
+        // Event when clicking on any of the places
         on('clickPlace', (place: Place) => {
 
-            if (!this.insidePlace.visible || !this.popup.visible) {
+            if (!this.insidePlace.visible && !this.popup.visible) {
                 this.insidePlace.show(place, Number(this.year.text));
             }
 
@@ -148,40 +156,64 @@ export default class GameScene extends SceneClass {
             this.showHelp(place);
         });
 
+        // event when the popup "OK" is clicked (for actions when the game is started or finished
+        on('popupClick', () => {
+
+            if (this.gameState == -1) {     // if game is not running yet, start it when the ok is clicked on the popup (when the final message is shown
+                this.gameState = 0;
+                this.newYearTime = Date.now();
+                this.lastTickTime = Date.now();         // set the last tick time to now so that it starts from the beginning
+            }
+            else if (this.gameState == 1) {     // restart the scene when the game is finished and someone clicked on the popup ok (when the final message is shown)
+                this.restartGame();
+            }
+
+        });
+
         // tick system setup
         this.tickLength = Math.round(gameOptions.yearLength * 1000 / this.places.length);           // calculate tick length
-        this.lastTickTime = Date.now() - this.tickLength;                                                  // set the last tick to now - tick length to ensure it starts directly with the first tick
-        this.nextTick = 0;                                                                             // set the next tick to 0
 
-
-
-
-    }
-
-    onHide() {
-
-        // TODO: Maybe events need to be turned off!
+        // trigger the restart to set everything up
+        this.restartGame();
 
     }
 
     update() {
         super.update();
 
-        // tick system
-        if (Date.now() - this.lastTickTime > this.tickLength) {         // check if the next tick is due and execute it
+        // update the place
+        for (let p of this.places) {        // add all places
+            p.update();
+        }
 
-            this.lastTickTime = Date.now();                 // set the last tick time to now
-            this.places[this.nextTick].tick(Number(this.year.text));              // execute the tick on the place
-            this.nextTick++;                                // increase the tick counter
+        if (this.gameState == 0) {
 
-            if (this.nextTick >= this.places.length) {
+            // update the year progress bar
+            this.yearProgress.setBar((Date.now() - this.newYearTime) / (gameOptions.yearLength * 1000));
 
-                this.nextTick = 0;                                              // set the tick counter to 0
-                this.year.text = String(Number(this.year.text) + 1);      // increase the year
+            // let the emoji flicker of the place which is currently working
+            this.places[this.nextTick].image.scaleX = 1 - Math.cos(Date.now() / 100) * 0.05;
+            this.places[this.nextTick].image.scaleY = 1 - Math.cos(Date.now() / 100) * 0.05;
+
+            // tick system
+            if (Date.now() - this.lastTickTime > this.tickLength) {         // check if the next tick is due and execute it
+
+                this.lastTickTime = Date.now();                 // set the last tick time to now
+                this.places[this.nextTick].tick(Number(this.year.text));              // execute the tick on the place
+                this.nextTick++;                                // increase the tick counter
+
+                if (this.nextTick >= this.places.length) {
+
+                    this.nextTick = 0;                                              // set the tick counter to 0
+                    this.year.text = String(Number(this.year.text) + 1);      // increase the year
+                    this.newYearTime = Date.now();                                    // set the new year timer (for the year progress bar) to now
+
+                }
 
             }
 
         }
+
 
         // update resources text (not for the cathedral!)
         for (let i = 0; i < this.resources.length - 1; i++) {
@@ -189,26 +221,56 @@ export default class GameScene extends SceneClass {
         }
 
         // check if the game was finished
-        if (this.resources[5] >= 10000 && Number(this.year.text) <= 1300) {
+        if (this.resources[5] >= 10 && Number(this.year.text) <= 1300) {        // TODO change back to 10000
 
-            this.popup.show('Congratulations!\n\nYou\'ve completed the cathedral before the 13th century\'s close (' + this.year.text +  '), restoring your city\'s glory and earning the bishop\'s pride!');
+            this.gameState = 1;
+
+            this.popup.show('Congratulations!\n\nYou\'ve completed the cathedral before the 13th century\'s close (' + this.year.text +  '), restoring your city\'s glory and earning the bishop\'s pride!\n\nPlay again?');
 
         }
         else if (this.resources[5] >= 10000) {
 
-            this.popup.show('The cathedral is finally completed, but alas, it\'s a bit too late (' + this.year.text +  ').\n\nThe 13th century has already come to an end, and other cities have stolen the spotlight with their faster progress.');
+            this.gameState = 1;
+
+            this.popup.show('The cathedral is finally completed, but alas, it\'s a bit too late (' + this.year.text +  ').\n\nThe 13th century has already come to an end, and other cities have stolen the spotlight with their faster progress.\n\n Play again?');
 
         }
 
         // update the cathedral progress
         this.progressText.text = String(this.resources[5]) + ' / 10000';
 
-
-
     }
 
     render() {
         super.render();
+
+    }
+
+    restartGame() {
+
+        // set the initial game state
+        this.gameState = -1;                // -1: Starting, 0: Running, 1: End
+
+        // set the year back to 1213
+        this.year.text = '1213';
+
+        // initialize resources
+        for (let i = 0; i < this.resources.length; i++) {
+            this.resources[i] = 0;
+        }
+
+        // initialize the places
+        for (let i = 0; i < this.places.length; i++) {
+
+            this.places[i].reset();
+
+        }
+
+        // setup the tick system
+        this.nextTick = 0;                                                                             // set the next tick to 0
+
+        // show the initial popup
+        this.popup.show(this.helpString);
 
     }
 
@@ -282,6 +344,5 @@ export default class GameScene extends SceneClass {
         this.popup.show(helpString);
 
     }
-
 
 }

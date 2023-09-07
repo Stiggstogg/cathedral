@@ -41,9 +41,10 @@ export default class WorkerTile extends SpriteClass {
         // parameters
         let shadowDistance = gameOptions.gameWidth * 0.008;      // distance of the shadow
         let yDistances = [
-            0,                                      // background to name
+            gameOptions.gameHeight * 0.02,                                      // background to name
             gameOptions.gameHeight * 0.05,         // title to picture
             gameOptions.gameHeight * 0.02,         // background to hire / fire button
+            gameOptions.gameHeight * 0.01,         // row gap between job age and wage
         ];
 
         let xDistances = [
@@ -113,7 +114,8 @@ export default class WorkerTile extends SpriteClass {
                 Text({text: 'Job:', ...myFonts[5]}),
                 Text({text: 'Age:', ...myFonts[5]}),
                 Text({text: 'Wage:', ...myFonts[5]})
-            ]
+            ],
+            rowGap: yDistances[3]
         });
 
         // create the characteristics
@@ -122,7 +124,8 @@ export default class WorkerTile extends SpriteClass {
             y: characteristicsTitle.y,
             justify: 'end',
             anchor: {x: 1, y: 0},
-            children: [this.job, this.age, this.wage]
+            children: [this.job, this.age, this.wage],
+            rowGap: characteristicsTitle.rowGap
         });
 
         // create the reputation title

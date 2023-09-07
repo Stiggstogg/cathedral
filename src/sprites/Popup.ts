@@ -1,7 +1,8 @@
 import {
     Text,
     Sprite,
-    SpriteClass
+    SpriteClass,
+    emit
 } from 'kontra'
 import {gameOptions} from "../helper/gameOptions.ts";
 import myFonts from "../helper/fonts.ts";
@@ -79,6 +80,8 @@ export default class Popup extends SpriteClass {
 
     clickButton() {
         this.visible = false;
+
+        emit('popupClick');
     }
 
     update() {

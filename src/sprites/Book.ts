@@ -61,7 +61,7 @@ export default class Book extends SpriteClass {
         let coverWidth = gameOptions.gameWidth * 0.01;          // book cover width
         let lineNum = 9;               // number of writing lines per page
         let gapsY = [
-            gameOptions.gameHeight * 0.02,          // 0: year from page top
+            gameOptions.gameHeight * 0.03,          // 0: year from page top
             gameOptions.gameHeight * 0.02,          // 1: title line from title
             gameOptions.gameHeight * 0.12,          // 2: writing lines from title year
             gameOptions.gameHeight * 0.07           // 3: gap between lines

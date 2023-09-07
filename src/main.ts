@@ -5,14 +5,8 @@ import {
     initPointer
 } from 'kontra';
 
-// imports: images
-
-// import sprite instances
-import SceneManager from "./scenes/sceneManager.ts";
-import LoadingScene from "./scenes/loadingScene.ts";
-import MenuScene from "./scenes/menuScene.ts";
+// import scenes and options
 import GameScene from "./scenes/gameScene.ts";
-import WinScene from "./scenes/winScene.ts";
 import {gameOptions} from "./helper/gameOptions.ts";
 
 // initialize kontra
@@ -28,14 +22,8 @@ addEventListener('resize', autoFitCanvas);
 autoFitCanvas();
 
 // create scenes
-const loadingScene = new LoadingScene('loading');
-const menuScene = new MenuScene('menu');
 const gameScene = new GameScene('game');
-const winScene = new WinScene('win');
-
-// create scene manager
-let sceneManager = new SceneManager();
-sceneManager.init([loadingScene, menuScene, gameScene, winScene]);
+gameScene.show();
 
 // game loop
 let loop = GameLoop({
@@ -43,14 +31,14 @@ let loop = GameLoop({
     // update
     update: function(): void {
 
-        sceneManager.currentScene.update();
+        gameScene.update();
 
     },
 
     // render
     render: function(): void {
 
-        sceneManager.currentScene.render();
+        gameScene.render();
 
     }
 
@@ -58,9 +46,6 @@ let loop = GameLoop({
 
 // start loop
 loop.start();
-
-// exports
-export {sceneManager};
 
 
 // auto fit the canvas to the screen size (maximize horizontally or vertically) without stretching
