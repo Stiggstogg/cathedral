@@ -103,15 +103,15 @@ export default class Worker {
         // create the production matrix (!gameplay setting!)
         let productionMatrix = [
             [0, 0, 0],          // 0: money consumption (not used, will be calculated based on wage)
-            [425, 525, 30],     // 1: money production (bishop)
+            [270, 330, 30],     // 1: money production (bishop)
             [-15, -5, 3],       // 2: iron consumption (smith)
             [0, 0, 0],          // 3: iron production (not used!)
             [-20, -10, 3],      // 4: stone consumption (mason)
             [0, 0, 0],          // 5: stone production (not used!)
             [-15, -5, 3],       // 6: bread consumption (smith, mason)
-            [10, 30, 5],        // 7: bread production (baker)
+            [30, 50, 10],        // 7: bread production (baker)
             [-10, -4, 3],       // 8: tool consumption (mason)
-            [4, 10, 3],        // 9: tool production (smith)
+            [8, 16, 3],        // 9: tool production (smith)
             [0, 0, 0],          // 10: cathedral consumption (not used!)
             [30, 50, 10],        // 11: cathedral production (mason)
         ];
