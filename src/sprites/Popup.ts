@@ -85,10 +85,6 @@ export default class Popup extends SpriteClass {
         emit('popupClick');
     }
 
-    update() {
-        super.update();
-    }
-
     render() {
 
         if (this.visible) {

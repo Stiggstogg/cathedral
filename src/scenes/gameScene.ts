@@ -97,7 +97,7 @@ export default class GameScene extends SceneClass {
                 Text({text: '', ...gameOptions.fontSubtitles}),
                 Text({text: '⚒️: ', ...gameOptions.fontSubtitles}),
                 Text({text: '', ...gameOptions.fontSubtitles})
-                ]
+            ]
         });
 
         // places
@@ -308,9 +308,7 @@ export default class GameScene extends SceneClass {
 
         // initialize the places
         for (let i = 0; i < this.places.length; i++) {
-
             this.places[i].reset();
-
         }
 
         // setup the tick system

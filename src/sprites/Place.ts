@@ -75,24 +75,23 @@ export default class Place {
 
         // fade the indicator
         if (this.indicator.opacity > 0) {
-            this.indicator.opacity = this.indicator.opacity - 1 / (gameOptions.indicatorFadeTime * 60);
+            this.indicator.opacity = this.indicator.opacity - 1 / (5 * 60);
         }
 
         // move the indicator
         if (this.indicator.y >= 0) {
-            this.indicator.y = this.indicator.y - (gameOptions.indicatorYMoveSpeed * gameOptions.gameHeight) / 60;
+            this.indicator.y = this.indicator.y - (0.05 * gameOptions.gameHeight) / 60;
         }
 
         // indicator wobbles
-        if (this.indicator.x >= this.image.x + gameOptions.gameHeight * gameOptions.indicatorMaxXMovement) {
+        if (this.indicator.x >= this.image.x + gameOptions.gameHeight * 0.01) {
             this.indicatorXDirection = -1;
         }
-        else if (this.indicator.x <= this.image.x - gameOptions.gameHeight * gameOptions.indicatorMaxXMovement) {
+        else if (this.indicator.x <= this.image.x - gameOptions.gameHeight * 0.01) {
             this.indicatorXDirection = 1;
         }
 
-        this.indicator.x = this.indicator.x + this.indicatorXDirection * (gameOptions.indicatorXMoveSpeed * gameOptions.gameWidth) / 60;
-
+        this.indicator.x = this.indicator.x + this.indicatorXDirection * (0.02 * gameOptions.gameWidth) / 60;
 
     }
 
@@ -115,11 +114,15 @@ export default class Place {
 
         if (this.placeType == 't') {
 
+            // set the worker changes (!gameplay settings!)
+            let workerLeaveChance = 0.25;            // chance that a worker leaves the town
+            let newWorkerChance = 0.25;               // chance that the last two spots are filled
+
             // update all worker spots
             for (let i = 0; i < this.workers.length; i++) {
 
                 // check if any of the workers is leaving and remove them
-                if (this.workers[i].name != 'Empty' && Math.random() <= gameOptions.workerLeaveChance) {
+                if (this.workers[i].name != 'Empty' && Math.random() <= workerLeaveChance) {
                     this.workers[i] = new Worker('empty');
                 }
 
@@ -138,7 +141,7 @@ export default class Place {
                             this.workers[2] = new Worker('mason');
                             break;
                         default:
-                            if (Math.random() <= gameOptions.newWorkerChance) {
+                            if (Math.random() <= newWorkerChance) {
 
                                 let jobChance = Math.random();
                                 let job: string;
@@ -169,6 +172,14 @@ export default class Place {
 
         }
         else {
+
+            let resourceMissingText = [
+                    'money',             // 0: not enough money
+                    'iron',              // 1: not enough iron
+                    'stone',             // 2: not enough stone
+                    'bread',             // 3: not enough bread
+                    'tools'             // 4: not enough tools
+                ];
 
             // create a new yearbook entry (everything empty)
             let yearbookEntry = new YearbookEntry();
@@ -223,7 +234,7 @@ export default class Place {
                     yearbookEntry.workerBalance[i].balance = tempProduction;
 
                 }
-                else if (!resourceMissing[0]) {                             // if money is not missing, then still substract the wage from the worker!
+                else if (!resourceMissing[0]) {                             // if money is not missing, then still subtract the wage from the worker!
                     this.resources[0] = this.resources[0] + tempProduction[0];
                     yearbookEntry.overallBalance[0] = yearbookEntry.overallBalance[0] + tempProduction[0];
 
@@ -237,7 +248,7 @@ export default class Place {
             // write the events in the yearbook
             for (let i = 0; i < resourceMissing.length; i++) {
                 if (resourceMissing[i]) {
-                    yearbookEntry.events.push('Not enough ' + gameOptions.resourceMissingText[i]);
+                    yearbookEntry.events.push('Not enough ' + resourceMissingText[i]);
                 }
 
             }

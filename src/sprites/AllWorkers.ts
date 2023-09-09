@@ -17,9 +17,6 @@ export default class AllWorkers extends SpriteClass {
             height: 0
         });             // create the background (parent sprite)
 
-        // initialize variables
-
-
         // parameters
         let workerX = gameOptions.gameWidth * 0.01;
 

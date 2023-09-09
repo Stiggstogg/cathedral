@@ -21,15 +21,19 @@ export default class Worker {
             this.name = 'Empty';
         }
         else {
-            this.name = this.getRandom(names);                                      // get a random name
+            this.name = this.getRandom(names);            // get a random name
         }
 
         // get a random age
+
+        let age = [10, 25];             // minimum and maximum age (!gameplay setting!)
+        let ageBishop = [20, 30];       // minimum and maximum age of bishop (!gameplay setting!)
+
         if (this.job == 'bishop') {
-            this.age = Math.round(random.generateUniform(gameOptions.ageBishop))    // different age for the bishop (cannot be a child)
+            this.age = Math.round(random.generateUniform(ageBishop))    // different age for the bishop (cannot be a child)
         }
         else {
-            this.age = Math.round(random.generateUniform(gameOptions.age));
+            this.age = Math.round(random.generateUniform(age));
         }
 
         this.setEmoji();                                                        // set face (based on age) and job emoji
@@ -71,7 +75,7 @@ export default class Worker {
 
     dies(): boolean {
 
-        let curveValue = 1 / (1 + Math.exp( (-this.age + gameOptions.averageLifeExpectancy) / gameOptions.curveWidthLifeExpectancy ));  // sigmoide function is used here: (1/(1+e^( (-x + expectancy) / flatness ))
+        let curveValue = 1 / (1 + Math.exp( (-this.age + 40) / 1.5));  // sigmoide function is used here: (1/(1+e^( (-x + expectancy) / flatness ))
 
         return Math.random() <= curveValue;                 // return true (worker dies) if the random value is smaller than the curve value and vice versa
 
@@ -79,6 +83,38 @@ export default class Worker {
 
     // set the base production values, variations, wage and reputation
     setValues() {
+
+        // create the reputation matrix (!gameplay setting!)
+        let reputationMatrix = [
+                [''],                       // 0: money consumption (not used!)
+                [''],                       // 1: money production (no used)
+                ['🟠Inefficient', '🟢Efficient'],   // 2: iron consumption (smith)
+                [''],                       // 3: iron production (not used!)
+                ['🟠Inefficient', '🟢Efficient'],   // 4: stone consumption (mason)
+                [''],                       // 5: stone production (not used!)
+                ['🟠Hungry', '🟢Small Appetite'],   // 6: bread consumption (smith, mason)
+                ['🟠Lazy', '🟢Hard working'],       // 7: bread production (baker)
+                ['🟠Inefficient', '🟢Efficient'],   // 8: tool consumption (mason)
+                ['🟠Lazy', '🟢Hard working'],       // 9: tool production (smith)
+                [''],                       // 10: cathedral consumption (not used!)
+                ['🟠Lazy', '🟢Hard working'],       // 11: cathedral production (mason)
+            ];
+
+        // create the production matrix (!gameplay setting!)
+        let productionMatrix = [
+            [0, 0, 0],          // 0: money consumption (not used, will be calculated based on wage)
+            [425, 525, 30],     // 1: money production (bishop)
+            [-15, -5, 3],       // 2: iron consumption (smith)
+            [0, 0, 0],          // 3: iron production (not used!)
+            [-20, -10, 3],      // 4: stone consumption (mason)
+            [0, 0, 0],          // 5: stone production (not used!)
+            [-15, -5, 3],       // 6: bread consumption (smith, mason)
+            [10, 30, 5],        // 7: bread production (baker)
+            [-10, -4, 3],       // 8: tool consumption (mason)
+            [4, 10, 3],        // 9: tool production (smith)
+            [0, 0, 0],          // 10: cathedral consumption (not used!)
+            [30, 50, 10],        // 11: cathedral production (mason)
+        ];
 
         let profile: number[] = [];
 
@@ -112,8 +148,8 @@ export default class Worker {
             if (profile[i] > -1) {
 
                 wageFactorCounterMax++;
-                minMaxVar = gameOptions.productionMatrix[i*2 + profile[i]];
-                reputation = gameOptions.reputationMatrix[i*2 + profile[i]];
+                minMaxVar = productionMatrix[i*2 + profile[i]];
+                reputation = reputationMatrix[i*2 + profile[i]];
 
                 this.production[i] = Math.round(random.generateUniform(minMaxVar));     // get random production (based on matrix)
                 this.variation[i] = minMaxVar[2];                                       // get variation
