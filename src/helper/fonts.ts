@@ -7,7 +7,7 @@ interface OneFont {
 
 let myFonts: OneFont[] = [];
 
-// Font 0 (Title in menu)
+// Font 0 (year in main page)
 myFonts.push({
     font: '72px Arial',
     color: 'white',
@@ -58,7 +58,7 @@ myFonts.push({
 // Font 6 (Inside place title)
 myFonts.push({
     font: '48px Arial',
-    color: 'Black',
+    color: 'White',
     anchor: {x: 0.5, y: 0},
     textAlign: 'center'
 });

@@ -68,6 +68,7 @@ export default class Popup extends SpriteClass {
             0,
             0,
             'OK',
+            '#8d8d85',
             () => {
                 this.clickButton();
             }

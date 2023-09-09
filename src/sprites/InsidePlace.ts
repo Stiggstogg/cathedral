@@ -31,7 +31,7 @@ export default class InsidePlace extends SpriteClass {
             y: 0,
             width: gameOptions.gameWidth,
             height: gameOptions.gameHeight,
-            color: '#EADDCA'
+            color: '#8d8d85'
         });             // create the background (parent sprite)
 
         // store variables
@@ -62,9 +62,12 @@ export default class InsidePlace extends SpriteClass {
         this.cancelButton = Text({
             x: gameOptions.gameWidth * 0.96,
             y: gameOptions.gameWidth * 0.01,
-            text: '✖️',
+            text: '❎',
             ...myFonts[6],
-            onDown: () => {this.hide();}
+            onDown: () => {
+                this.hide();
+                emit('makeClick');
+            }
         });
 
         // help button
@@ -98,6 +101,7 @@ export default class InsidePlace extends SpriteClass {
                 this.workersVisible = true;
                 this.workerButtonVisible = false;
                 this.bookButtonVisible = true;
+                emit('makeClick');
             }
         });
 
@@ -112,6 +116,7 @@ export default class InsidePlace extends SpriteClass {
                 this.workersVisible = false;
                 this.workerButtonVisible = true;
                 this.bookButtonVisible = false;
+                emit('makeClick');
             }
         });
 
@@ -120,10 +125,12 @@ export default class InsidePlace extends SpriteClass {
         // events
         on('previousButton', () => {
             this.fillPageWorkshop(Number(this.book.year[0].text) - 1);
+            emit('makeClick');
         });
 
         on('nextButton', () => {
             this.fillPageWorkshop(Number(this.book.year[0].text) + 1);
+            emit('makeClick');
         });
 
     }
@@ -231,7 +238,7 @@ export default class InsidePlace extends SpriteClass {
 
         // left text
         let relevantResources = this.place.relevantResources;   // get the array with the relevant resources
-        let resourceSymbols = ['🪙','🧲','🪨','🥖','⚒️','⛪'];
+        let resourceSymbols = [' 🪙 ',' 🧲 ',' 🪨 ',' 🥖 ',' ⚒️ ',' ⛪ '];
         let textLeft: string[] = [];                        // initialize
         textLeft.push('Balance:', '', '', '', '', '', '', '');      // first title line and first entry of the resources line (empty)
 
@@ -259,7 +266,14 @@ export default class InsidePlace extends SpriteClass {
                 for (let j = 0; j < entry.workerBalance[i].balance.length; j++) {
 
                     if (relevantResources[j]) {
-                        textLeft.push(String(entry.workerBalance[i].balance[j]));
+
+                        if (j == 5) {           // convert cathedral progress in %
+                            textLeft.push((entry.workerBalance[i].balance[j] / 100).toFixed(2) + ' %');
+                        }
+                        else {
+                            textLeft.push(String(entry.workerBalance[i].balance[j]));
+                        }
+
                     }
                     else {
                         textLeft.push(' ');
@@ -277,7 +291,17 @@ export default class InsidePlace extends SpriteClass {
         for (let i = 0; i < entry.overallBalance.length; i++) {
 
             if (relevantResources[i]) {
-                textLeft.push(String(entry.overallBalance[i]));
+
+                if (i == 5) {           // convert cathedral progress in %
+                    textLeft.push((entry.overallBalance[i] / 100).toFixed(2) + ' %');
+                }
+                else {
+                    textLeft.push(String(entry.overallBalance[i]));
+                }
+
+
+
+
             }
             else {
                 textLeft.push('');

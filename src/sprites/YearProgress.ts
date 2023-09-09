@@ -28,7 +28,7 @@ export default class YearProgress extends SpriteClass {
             y: this.width * frameWidth,
             width: this.fullWidth,
             height: this.height - 2 * (this.width * frameWidth),
-            color: '#E1C16E'
+            color: '#eddaa8'
         });
 
         // create the bar
@@ -37,7 +37,7 @@ export default class YearProgress extends SpriteClass {
             y: barBackground.y,
             width: this.fullWidth,
             height: barBackground.height,
-            color: '#4A0404'
+            color: '#8d8d85'
         });
 
         this.fullWidth = this.bar.width;

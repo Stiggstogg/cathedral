@@ -92,7 +92,7 @@ export default class Book extends SpriteClass {
             y: this.cover.y + coverWidth / 2,
             width: this.cover.width - 2 * coverWidth,
             height: this.cover.height - coverWidth,
-            color: '#E1C16E'
+            color: '#eddaa8'
         });
 
         // create separator line between the pages
@@ -180,7 +180,7 @@ export default class Book extends SpriteClass {
             }
         }
 
-        let textY = this.linesLeft.y - Number(this.linesLeft.rowGap) * 0.75;
+        let textY = this.linesLeft.y - Number(this.linesLeft.rowGap) * 0.6;
         let textRowGap = Number(this.linesLeft.rowGap) - this.textLeft[0].height;
         let textColGap = gameOptions.gameWidth * 0.01;
 
@@ -220,10 +220,8 @@ export default class Book extends SpriteClass {
 
         for (let i = 0; i < 4; i++) {
 
-
-
             this.buyButtons.push(new Button(
-                0, 0, 'Buy ' + String(buyAmount[i]) + buyResourceEmoji, () => {
+                0, 0, 'Buy ' + String(buyAmount[i]) + buyResourceEmoji, '#8d8d85',() => {
                     emit('buy', buyResourceType[i], buyAmount[i]);
                 }
             ))
@@ -248,6 +246,7 @@ export default class Book extends SpriteClass {
             numCols: 2,
             flow: 'grid',
             justify: 'center',
+            align: 'center',
             children: this.buyButtons
         });
 

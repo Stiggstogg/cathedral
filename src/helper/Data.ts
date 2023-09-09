@@ -1,4 +1,5 @@
 // list of possible names
+
 export const names = [
     "William", "John", "Richard", "Robert", "Thomas", "Henry", "Walter", "Geoffrey", "Peter", "James",
      "Simon", "Roger", "Stephen", "Matthew", "Nicholas", "Gilbert", "Alan", "Philip", "David", "Hugh",
@@ -30,4 +31,4 @@ export const helpTexts = [
     'Your hired blacksmiths will forge tools for the masons using the iron you\'ve acquired.\n\n' + helpText2 + ' Insufficient funds, bread or iron means no tools!\n\n' + helpText3,
     helpText1 + 'Masonry!\n\n' +
     'Your hired masons will use stone and tools to construct the cathedral.\n\n' + helpText2 + ' Insufficient funds, bread, stone or tools means no progress!\n\n' + helpText3,
-]
+];

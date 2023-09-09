@@ -31,7 +31,7 @@ export default class WorkerTile extends SpriteClass {
             y: gameOptions.gameHeight * 0.12,
             width: gameOptions.gameWidth * 0.17,
             height: gameOptions.gameHeight * 0.85,
-            color: '#E1C16E'
+            color: '#eddaa8'
         });             // create the background (parent sprite)
 
         // initialize variables
@@ -140,7 +140,7 @@ export default class WorkerTile extends SpriteClass {
         // create the reputation text
         this.reputation = Text({
             x: reputationTitle.x,
-            y: reputationTitle.y + reputationTitle.height,
+            y: reputationTitle.y + reputationTitle.height + yDistances[3],
             text: '',
             ...myFonts[5],
             width: this.width - 2 * xDistances[0]
@@ -151,6 +151,7 @@ export default class WorkerTile extends SpriteClass {
             0,
             0,
             'Hire',
+            '#58a23c',
             () => {
                 this.clickButton();
             }
@@ -185,6 +186,13 @@ export default class WorkerTile extends SpriteClass {
     showButton(text: string) {
         this.hireFireButtonVisible = true;
         this.hireFireButton.setText(text);
+
+        if (text == 'Fire') {
+            this.hireFireButton.color = '#ec7c26';
+        }
+        else {
+            this.hireFireButton.color = '#58a23c';
+        }
 
     }
 

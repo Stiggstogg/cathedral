@@ -10,9 +10,9 @@ export default class Button extends SpriteClass {
 
     private text: Text;
 
-    constructor(x: number, y: number, text: string, callback: () => void) {
+    constructor(x: number, y: number, text: string, color: string, callback: () => void) {
 
-        super({x: x, y: y, color: 'blue', onDown: callback});
+        super({x: x, y: y, color: color, onDown: callback});
 
         this.text = Text({
             text: text,

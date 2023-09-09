@@ -63,7 +63,7 @@ export default class AllWorkers extends SpriteClass {
 
                     for (let j = 1; j < workers[i].reputation.length; j++) {
 
-                        reputationText = reputationText + ', ' + workers[i].reputation[j];
+                        reputationText = reputationText + '\n' + workers[i].reputation[j];
 
                     }
 

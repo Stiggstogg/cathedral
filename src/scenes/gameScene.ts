@@ -3,7 +3,7 @@ import {
     emit,
     Grid,
     on,
-    SceneClass,
+    SceneClass, Sprite,
     Text, track
 } from 'kontra';
 import myFonts from "../helper/fonts.ts";
@@ -14,6 +14,7 @@ import Worker from "../sprites/Worker.ts";
 import Popup from "../sprites/Popup.ts";
 import {helpTexts} from "../helper/Data.ts";
 import YearProgress from "../sprites/YearProgress.ts";
+import Sound from "../helper/Sound.ts";
 
 // Game scene: Main game scene
 export default class GameScene extends SceneClass {
@@ -34,6 +35,9 @@ export default class GameScene extends SceneClass {
     private helpString!: string;
     private helpButton!: Text;
     private yearProgress!: YearProgress;
+    private audioContext: AudioContext;
+    private sound!: Sound;
+    private cathedralReveal!: Sprite;
 
     constructor(id: string) {
 
@@ -45,10 +49,13 @@ export default class GameScene extends SceneClass {
         this.places = [];
         this.newYearTime = 0;
         this.lastTickTime = 0;
+        this.audioContext = new AudioContext();
 
     }
 
     onShow() {
+
+        this.sound = new Sound(this.audioContext);
 
         // help text and button
         this.helpString = 'Welcome to the 13th century, a time when magnificent cathedrals adorn the skyline of every major city, except yours.\n\n' +
@@ -60,7 +67,7 @@ export default class GameScene extends SceneClass {
         this.helpButton = Text({
             x: gameOptions.gameWidth * 0.96,
             y: gameOptions.gameHeight - gameOptions.gameHeight * 0.08,
-            text: '❓',
+            text: '❔',
             ...myFonts[6],
             anchor: {x: 0.5, y: 0.5},
             onDown: () => {
@@ -86,15 +93,15 @@ export default class GameScene extends SceneClass {
             flow: 'grid',
             children: [
                 Text({text: '🪙: ', ...myFonts[2]}),
-                Text({text: '0', ...myFonts[2]}),
+                Text({text: '', ...myFonts[2]}),
                 Text({text: '🧲: ', ...myFonts[2]}),
-                Text({text: '0', ...myFonts[2]}),
+                Text({text: '', ...myFonts[2]}),
                 Text({text: '🪨: ', ...myFonts[2]}),
-                Text({text: '0', ...myFonts[2]}),
+                Text({text: '', ...myFonts[2]}),
                 Text({text: '🥖: ', ...myFonts[2]}),
-                Text({text: '0', ...myFonts[2]}),
+                Text({text: '', ...myFonts[2]}),
                 Text({text: '⚒️: ', ...myFonts[2]}),
-                Text({text: '0', ...myFonts[2]})
+                Text({text: '', ...myFonts[2]})
                 ]
         });
 
@@ -103,19 +110,29 @@ export default class GameScene extends SceneClass {
             [false, false, false, false, false, false], this.resources, helpTexts[0]));
         this.places.push(new Place(0.05, 0.85, 'Town', '🏘️', 3, 'Town',
             [false, false, false, false, false, false], this.resources, helpTexts[1]));
-        this.places.push(new Place(0.25, 0.75, 'Bishop', '✝️', 3, 'Bishop',
+        this.places.push(new Place(0.23, 0.75, 'Bishop', '✝️', 3, 'Bishop',
             [true, false, false, false, false, false], this.resources, helpTexts[2]));
-        this.places.push(new Place(0.37, 0.35, 'Bakery', '🥖', 3, 'Workshop',
+        this.places.push(new Place(0.39, 0.35, 'Bakery', '🥖', 3, 'Workshop',
             [true, false, false, true, false, false], this.resources, helpTexts[3]));
-        this.places.push(new Place(0.73, 0.35, 'Blacksmith', '⚒️', 3, 'Workshop',
+        this.places.push(new Place(0.71, 0.35, 'Blacksmith', '⚒️', 3, 'Workshop',
             [true, true, false, true, true, false], this.resources, helpTexts[4]));
-        this.places.push(new Place(0.85, 0.75, 'Masonry', '🪨', 3, 'Workshop',
+        this.places.push(new Place(0.87, 0.75, 'Masonry', '🪨', 3, 'Workshop',
             [true, false, true, true, true, true], this.resources, helpTexts[5]));
         this.cathedral = new Place(0.55, 0.63, 'Cathedral', '⛪', 4, 'Cathedral',
             [false, false, false, false, false, false], this.resources, '');
 
         // progress
-        this.progressText = Text({text: '0 / 10000', ...myFonts[1], color: 'white', x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.90});
+        this.progressText = Text({text: '', ...myFonts[1], color: 'white', x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.90});
+
+        // cathedral reveal
+        this.cathedralReveal = Sprite({
+            x: this.cathedral.image.x - this.cathedral.image.width / 2,
+            y: this.cathedral.image.y - this.cathedral.image.height / 2 - gameOptions.gameHeight * 0.03,
+            width: this.cathedral.image.width,
+            height: this.cathedral.image.height,
+            opacity: 0.75,
+            color: '#58a23c'
+        });
 
         // initialize inside place
         this.insidePlace = new InsidePlace(this.places[1]);
@@ -124,10 +141,10 @@ export default class GameScene extends SceneClass {
         this.popup = new Popup();
 
         // add elements to scene
-        this.add([this.year, this.yearProgress, this.resourcesText, this.cathedral.compo, this.progressText, this.helpButton]);
+        this.add([this.year, this.yearProgress, this.resourcesText, this.cathedral.image, this.cathedral.description, this.progressText, this.helpButton, this.cathedralReveal]);
 
         for (let p of this.places) {        // add all places
-            this.add(p.compo);
+            this.add([p.image, p.description, p.indicator]);
         }
 
         this.add([this.insidePlace, this.popup]);   // need to be added at the end to ensure it is on top
@@ -135,8 +152,9 @@ export default class GameScene extends SceneClass {
         // Event when clicking on any of the places
         on('clickPlace', (place: Place) => {
 
-            if (!this.insidePlace.visible && !this.popup.visible) {
+            if (!this.insidePlace.visible && !this.popup.visible && this.gameState == 0) {
                 this.insidePlace.show(place, Number(this.year.text));
+                this.sound.click();
             }
 
         });
@@ -159,16 +177,24 @@ export default class GameScene extends SceneClass {
         // event when the popup "OK" is clicked (for actions when the game is started or finished
         on('popupClick', () => {
 
+            this.sound.click();
+
             if (this.gameState == -1) {     // if game is not running yet, start it when the ok is clicked on the popup (when the final message is shown
                 this.gameState = 0;
                 this.newYearTime = Date.now();
                 this.lastTickTime = Date.now();         // set the last tick time to now so that it starts from the beginning
+
             }
             else if (this.gameState == 1) {     // restart the scene when the game is finished and someone clicked on the popup ok (when the final message is shown)
                 this.restartGame();
             }
 
         });
+
+        // event when something should click (used for inside place things: Cancel button, book and worker button, change change buttons)
+        on('makeClick', () => {
+            this.sound.click();
+        })
 
         // tick system setup
         this.tickLength = Math.round(gameOptions.yearLength * 1000 / this.places.length);           // calculate tick length
@@ -180,6 +206,8 @@ export default class GameScene extends SceneClass {
 
     update() {
         super.update();
+
+        this.sound.playMusic();
 
         // update the place
         for (let p of this.places) {        // add all places
@@ -221,11 +249,13 @@ export default class GameScene extends SceneClass {
         }
 
         // check if the game was finished
-        if (this.resources[5] >= 10 && Number(this.year.text) <= 1300) {        // TODO change back to 10000
+        if (this.resources[5] >= 10000 && Number(this.year.text) <= 1300) {
 
             this.gameState = 1;
 
             this.popup.show('Congratulations!\n\nYou\'ve completed the cathedral before the 13th century\'s close (' + this.year.text +  '), restoring your city\'s glory and earning the bishop\'s pride!\n\nPlay again?');
+
+            this.insidePlace.hide();
 
         }
         else if (this.resources[5] >= 10000) {
@@ -234,10 +264,13 @@ export default class GameScene extends SceneClass {
 
             this.popup.show('The cathedral is finally completed, but alas, it\'s a bit too late (' + this.year.text +  ').\n\nThe 13th century has already come to an end, and other cities have stolen the spotlight with their faster progress.\n\n Play again?');
 
+            this.insidePlace.hide();
+
         }
 
-        // update the cathedral progress
-        this.progressText.text = String(this.resources[5]) + ' / 10000';
+        // update the cathedral progress and reveal cathedral
+        this.progressText.text = (this.resources[5] / 100).toFixed(2) + ' %';
+        this.cathedralReveal.height = this.cathedral.image.height * (1 - this.resources[5] / 10000);
 
     }
 
@@ -277,6 +310,8 @@ export default class GameScene extends SceneClass {
     // action when the hire or fire button is pressed
     hireFire(tilePosition: number) {
 
+        this.sound.click();
+
         let placeClicked = this.insidePlace.place;
 
         if (placeClicked.name == 'Town') {
@@ -314,6 +349,8 @@ export default class GameScene extends SceneClass {
 
     buyResources(type: number, amount: number) {
 
+        this.sound.click();
+
         let price = this.places[0].prices[type - 1] * amount / 10;
 
         if (price <= this.resources[0]) {
@@ -332,7 +369,9 @@ export default class GameScene extends SceneClass {
 
     showHelp(place?: Place) {
 
-        let helpString = '';
+        this.sound.click();
+
+        let helpString: string;
 
         if (typeof place !== 'undefined') {                           // help from a place was clicked
             helpString = place.helpString;

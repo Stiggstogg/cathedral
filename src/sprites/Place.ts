@@ -1,7 +1,6 @@
 // imports
 import {
     Text,
-    Grid,
     track, emit
 } from 'kontra'
 import myFonts from "../helper/fonts.ts";
@@ -16,7 +15,7 @@ export default class Place {
     public readonly emoji: string;
     public readonly description: Text;
     public readonly image: Text;
-    public readonly compo: Grid;
+    public indicator: Text;
     private readonly fullYearbook: YearbookEntry[];
     public readonly placeType: string;
     public readonly relevantResources: boolean[];
@@ -24,6 +23,7 @@ export default class Place {
     public workers: Worker[];
     public prices: number[];
     public helpString: string;
+    private indicatorXDirection: number;
 
     constructor(x: number, y: number, name: string, emoji: string, emojiFont: number, placeType: string, relevantResources: boolean[], resources: number[], helpString: string) {
 
@@ -33,6 +33,7 @@ export default class Place {
         this.resources = resources;
         this.prices = [];
         this.helpString = helpString;
+        this.indicatorXDirection = 1;
 
         // store variables
         this.name = name;
@@ -40,22 +41,23 @@ export default class Place {
         this.relevantResources = relevantResources;
         this.emoji = emoji;
 
-        // create elements of the composition (picture and text)
-        this.description = Text({text: this.name, ...myFonts[2], onDown: () => {this.click()}});
-        this.image = Text({text: emoji, ...myFonts[emojiFont], onDown: () => {this.click()}});
+        // create elements of the composition (picture, text and indicator text)
+        this.image = Text({x: gameOptions.gameWidth * x, y: gameOptions.gameHeight * y, text: emoji, ...myFonts[emojiFont], onDown: () => {this.click()}});
 
-        // create the composition
-        this.compo = Grid({
-            x: gameOptions.gameWidth * x,
-            y: gameOptions.gameHeight * y,
-            anchor: {x: 0.5, y: 0.5},
-            justify: 'center',
-            rowGap: gameOptions.gameHeight * 0.01,
-            children: [this.image, this.description]
+        this.description = Text({
+            x: this.image.x,
+            y: this.image.y + this.image.height / 2,
+            text: this.name, ...myFonts[2], anchor: {x: 0.5, y: 0}, onDown: () => { this.click() }
+        });
+
+        this.indicator = Text({
+            x: this.image.x,
+            y: this.image.y - this.image.height / 2 - gameOptions.gameHeight * 0.02,
+            text: '', ...myFonts[2], anchor: {x: 0.5, y: 1}
         });
 
         // track the pointer down events
-        track(this.description, this.image);
+        track(this.image, this.description);
 
         // set all workers to empty
         for (let i = 0; i < 5; i++) {
@@ -72,6 +74,27 @@ export default class Place {
             this.description.text = this.name + ' (' + String(this.numberOfWorkers()) + '/5)';
         }
 
+        // fade the indicator
+        if (this.indicator.opacity > 0) {
+            this.indicator.opacity = this.indicator.opacity - 1 / (gameOptions.indicatorFadeTime * 60);
+        }
+
+        // move the indicator
+        if (this.indicator.y >= 0) {
+            this.indicator.y = this.indicator.y - (gameOptions.indicatorYMoveSpeed * gameOptions.gameHeight) / 60;
+        }
+
+        // indicator wobbles
+        if (this.indicator.x >= this.image.x + gameOptions.gameHeight * gameOptions.indicatorMaxXMovement) {
+            this.indicatorXDirection = -1;
+        }
+        else if (this.indicator.x <= this.image.x - gameOptions.gameHeight * gameOptions.indicatorMaxXMovement) {
+            this.indicatorXDirection = 1;
+        }
+
+        this.indicator.x = this.indicator.x + this.indicatorXDirection * (gameOptions.indicatorXMoveSpeed * gameOptions.gameWidth) / 60;
+
+
     }
 
     // action which happens if the image or the description is clicked
@@ -85,8 +108,6 @@ export default class Place {
 
     // action which happens when the place needs to be updated (on every tick)
     tick(year: number) {
-
-        console.log('tick: ' + this.name);
 
         // increase the age of all workers
         for (let i = 0; i < this.workers.length; i++) {
@@ -191,7 +212,7 @@ export default class Place {
                     }
                 }
 
-                // update the resources and set the
+                // update the resources and write it into the yearbook
                 if (enoughResources) {
 
                     for (let j = 0; j < tempWorker.production.length; j++) {
@@ -207,13 +228,21 @@ export default class Place {
                     yearbookEntry.workerBalance[i].balance = tempProduction;
 
                 }
+                else if (!resourceMissing[0]) {                             // if money is not missing, then still substract the wage from the worker!
+                    this.resources[0] = this.resources[0] + tempProduction[0];
+                    yearbookEntry.overallBalance[0] = yearbookEntry.overallBalance[0] + tempProduction[0];
+
+                    // write the yearbook entry of this worker
+                    yearbookEntry.workerBalance[i].balance[0] = tempProduction[0];
+
+                }
 
             }
 
             // write the events in the yearbook
             for (let i = 0; i < resourceMissing.length; i++) {
                 if (resourceMissing[i]) {
-                    yearbookEntry.events.push(gameOptions.resourceMissingText[i]);
+                    yearbookEntry.events.push('Not enough ' + gameOptions.resourceMissingText[i]);
                 }
 
             }
@@ -222,15 +251,13 @@ export default class Place {
             for (let i = 0; i < this.workers.length; i++) {
                 if (this.workers[i].job != 'empty' && this.workers[i].dies() && yearbookEntry.events.length < 9) {      // check for each non empty worker if they die and if there are not yet too many events (to not overfill the yearbook)
 
-
-
                     if (this.placeType == 'Bishop') {
-                        yearbookEntry.events.push('Bishop ' + this.workers[i].name + ' passed away ☠️!');  // write yearbook entry
+                        yearbookEntry.events.push('Bishop ' + this.workers[i].name + ' (' + String(this.workers[i].age) + ') passed away ☠️!');  // write yearbook entry
                         this.workers[i] = new Worker('bishop');                      // replace with a new bishop
                         yearbookEntry.events.push('Welcome Bishop ' + this.workers[i].name + '!');  // write yearbook entry
                     }
                     else {
-                        yearbookEntry.events.push(this.workers[i].name + ' died ☠️!');  // write yearbook entry
+                        yearbookEntry.events.push(this.workers[i].name + ' (' + String(this.workers[i].age) + ') died ☠️!');  // write yearbook entry
                         this.workers[i] = new Worker('empty');                      // replace with empty worker
                     }
 
@@ -243,6 +270,27 @@ export default class Place {
 
             // write the yearbook entry into the yearbook
             this.writeYearbookEntry(yearbookEntry);
+
+            // write the indicator
+            let symbols = ['🪙','🧲','🪨','🥖','⚒️','⛪'];
+
+            for (let i = this.relevantResources.length - 1; i >= 0; i--) {         // find the last true entry in the relevant resources array (as this is the resource which is produced in this workshop)
+                if (this.relevantResources[i]) {
+
+                    if (i == 5) {
+                        this.indicator.text = '+' + (yearbookEntry.overallBalance[i] / 100).toFixed(2) + ' %'+ symbols[i];
+                    }
+                    else {
+                        this.indicator.text = '+' + yearbookEntry.overallBalance[i] + symbols[i];
+                    }
+
+
+                    this.indicator.opacity = 1;                                                                 // reset the opacity of the indicator
+                    this.indicator.y = this.image.y - this.image.height / 2 - gameOptions.gameHeight * 0.02;    // reset the y position of the indicator
+                    this.indicator.x = this.image.x;                                                            // reset the y position of the indicator
+                    break;
+                }
+            }
 
         }
 
