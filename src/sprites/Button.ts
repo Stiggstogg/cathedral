@@ -4,7 +4,6 @@ import {
     track
 } from 'kontra'
 import {gameOptions} from "../helper/gameOptions.ts";
-import myFonts from "../helper/fonts.ts";
 
 export default class Button extends SpriteClass {
 
@@ -16,8 +15,9 @@ export default class Button extends SpriteClass {
 
         this.text = Text({
             text: text,
-            ...myFonts[2],
-            anchor: {x: 0.5, y: 0.5}
+            ...gameOptions.fontYearbook,
+            anchor: {x: 0.5, y: 0.5},
+            color: 'white'
         });
 
         this.width = this.text.width + 2 * gameOptions.gameWidth * 0.01;

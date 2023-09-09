@@ -64,6 +64,31 @@ export const gameOptions = {
     indicatorFadeTime: 5,               // time until the production indicator fades (in s)
     indicatorYMoveSpeed: 0.05,          // speed of the movement of the indicator (in game heights per s)
     indicatorXMoveSpeed: 0.02,           // speed of the movement of the indicator (in game widths per s)
-    indicatorMaxXMovement: 0.01         // maximum x movement (on both sides) of the indicator (in game widths)
+    indicatorMaxXMovement: 0.01,         // maximum x movement (on both sides) of the indicator (in game widths)
+
+    fontTitlePictures: {
+        font: '80px Arial',
+        color: 'white',
+        anchor: {x: 0.5, y: 0.5},
+        textAlign: 'center'
+    },
+
+    fontButtonProgress: {
+        font: '48px Arial',
+        color: 'White',
+        anchor: {x: 0.5, y: 0.5},
+        textAlign: 'center'
+    },
+
+    fontYearbook: {
+        font: '20px Arial',
+        color: 'black'
+    },
+
+    fontSubtitles: {
+        font: '32px Arial',
+        color: 'white',
+        textAlign: 'center'
+    }
 
 }

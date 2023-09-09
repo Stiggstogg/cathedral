@@ -6,7 +6,6 @@ import {
     SceneClass, Sprite,
     Text, track
 } from 'kontra';
-import myFonts from "../helper/fonts.ts";
 import {gameOptions} from "../helper/gameOptions.ts";
 import Place from "../sprites/Place.ts";
 import InsidePlace from "../sprites/InsidePlace.ts";
@@ -23,7 +22,6 @@ export default class GameScene extends SceneClass {
     private resourcesText!: Grid;
     private resources: number[];
     private places: Place[];
-    private cathedral!: Place;
     private year!: Text;
     private progressText!: Text;
     private tickLength!: number;        // length of one tick in ms
@@ -59,17 +57,14 @@ export default class GameScene extends SceneClass {
 
         // help text and button
         this.helpString = 'Welcome to the 13th century, a time when magnificent cathedrals adorn the skyline of every major city, except yours.\n\n' +
-            'You\'ve been appointed as the CATHEDRAL MASTER BUILDER by the bishop to complete the construction of the cathedral before the century\'s end.\n\n' +
-            'The bishop provides money for your project. Visit the TOWN to recruit skilled workers for your BAKERY, BLACKSMITH, and MASONRY. ' +
-            'Procure iron and stone from the MARKET.\n' +
+            'You\'ve been appointed as the CATHEDRAL MASTER BUILDER by the bishop to build a cathedral before the century\'s end.\n\n' +
             'For detailed guidance and information, explore each location.'
 
         this.helpButton = Text({
-            x: gameOptions.gameWidth * 0.96,
-            y: gameOptions.gameHeight - gameOptions.gameHeight * 0.08,
+            x: gameOptions.gameWidth * 0.97,
+            y: gameOptions.gameHeight - gameOptions.gameWidth * 0.03,
             text: '❔',
-            ...myFonts[6],
-            anchor: {x: 0.5, y: 0.5},
+            ...gameOptions.fontButtonProgress,
             onDown: () => {
                 emit('showHelp');
             }
@@ -78,10 +73,10 @@ export default class GameScene extends SceneClass {
         track(this.helpButton);
 
         // year
-        this.year = Text({text: '1213', ...myFonts[0], x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.1});
+        this.year = Text({text: '1213', ...gameOptions.fontTitlePictures, x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.1});
 
         // year progress
-        this.yearProgress = new YearProgress(this.year.x - this.year.width / 2, this.year.y + gameOptions.gameHeight * 0.05, this.year.width);
+        this.yearProgress = new YearProgress(this.year.x - this.year.width / 2, this.year.y + gameOptions.gameHeight * 0.07, this.year.width);
 
         // resources text
         this.resourcesText = Grid({
@@ -92,47 +87,66 @@ export default class GameScene extends SceneClass {
             numCols: 2,
             flow: 'grid',
             children: [
-                Text({text: '🪙: ', ...myFonts[2]}),
-                Text({text: '', ...myFonts[2]}),
-                Text({text: '🧲: ', ...myFonts[2]}),
-                Text({text: '', ...myFonts[2]}),
-                Text({text: '🪨: ', ...myFonts[2]}),
-                Text({text: '', ...myFonts[2]}),
-                Text({text: '🥖: ', ...myFonts[2]}),
-                Text({text: '', ...myFonts[2]}),
-                Text({text: '⚒️: ', ...myFonts[2]}),
-                Text({text: '', ...myFonts[2]})
+                Text({text: '🪙: ', ...gameOptions.fontSubtitles}),
+                Text({text: '', ...gameOptions.fontSubtitles}),
+                Text({text: '🧲: ', ...gameOptions.fontSubtitles}),
+                Text({text: '', ...gameOptions.fontSubtitles}),
+                Text({text: '🪨: ', ...gameOptions.fontSubtitles}),
+                Text({text: '', ...gameOptions.fontSubtitles}),
+                Text({text: '🥖: ', ...gameOptions.fontSubtitles}),
+                Text({text: '', ...gameOptions.fontSubtitles}),
+                Text({text: '⚒️: ', ...gameOptions.fontSubtitles}),
+                Text({text: '', ...gameOptions.fontSubtitles})
                 ]
         });
 
         // places
-        this.places.push(new Place(0.05, 0.55, 'Market', '🧺', 3, 'Market',
+        this.places.push(new Place(0.05, 0.55, 'Market', '🧺', 'm',
             [false, false, false, false, false, false], this.resources, helpTexts[0]));
-        this.places.push(new Place(0.05, 0.85, 'Town', '🏘️', 3, 'Town',
+        this.places.push(new Place(0.05, 0.85, 'Town', '🏘️', 't',
             [false, false, false, false, false, false], this.resources, helpTexts[1]));
-        this.places.push(new Place(0.23, 0.75, 'Bishop', '✝️', 3, 'Bishop',
+        this.places.push(new Place(0.23, 0.75, 'Bishop', '✝️', 'b',
             [true, false, false, false, false, false], this.resources, helpTexts[2]));
-        this.places.push(new Place(0.39, 0.35, 'Bakery', '🥖', 3, 'Workshop',
+        this.places.push(new Place(0.39, 0.35, 'Bakery', '🥖', 'w',
             [true, false, false, true, false, false], this.resources, helpTexts[3]));
-        this.places.push(new Place(0.71, 0.35, 'Blacksmith', '⚒️', 3, 'Workshop',
+        this.places.push(new Place(0.71, 0.35, 'Smithy', '⚒️', 'w',
             [true, true, false, true, true, false], this.resources, helpTexts[4]));
-        this.places.push(new Place(0.87, 0.75, 'Masonry', '🪨', 3, 'Workshop',
+        this.places.push(new Place(0.87, 0.75, 'Masonry', '🪨', 'w',
             [true, false, true, true, true, true], this.resources, helpTexts[5]));
-        this.cathedral = new Place(0.55, 0.63, 'Cathedral', '⛪', 4, 'Cathedral',
-            [false, false, false, false, false, false], this.resources, '');
+
+        // create cathedral
+        let cathedral = Text({
+            x: 0.55 * gameOptions.gameWidth,
+            y: 0.63 * gameOptions.gameHeight,
+            text: '⛪',
+            font: '180px Arial',
+            color: 'white',
+            anchor: {x: 0.5, y: 0.5},
+            textAlign: 'center'
+        });
+
+        let cathedralDescription = Text({
+            x: cathedral.x,
+            y: cathedral.y + cathedral.height / 2 + gameOptions.gameHeight * 0.01,
+            text: 'Cathedral',
+            ...gameOptions.fontSubtitles,
+            anchor: {x: 0.5, y: 0}
+        });
 
         // progress
-        this.progressText = Text({text: '', ...myFonts[1], color: 'white', x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.90});
+        this.progressText = Text({text: '', ...gameOptions.fontButtonProgress, color: 'white', x: gameOptions.gameWidth * 0.55, y: gameOptions.gameHeight * 0.94});
 
         // cathedral reveal
         this.cathedralReveal = Sprite({
-            x: this.cathedral.image.x - this.cathedral.image.width / 2,
-            y: this.cathedral.image.y - this.cathedral.image.height / 2 - gameOptions.gameHeight * 0.03,
-            width: this.cathedral.image.width,
-            height: this.cathedral.image.height,
+            x: cathedral.x - cathedral.width / 2,
+            y: cathedral.y - cathedral.height / 2 - gameOptions.gameHeight * 0.03,
+            width: cathedral.width,
+            height: cathedral.height,
             opacity: 0.75,
-            color: '#58a23c'
+            color: '#58a23c',
         });
+
+        this.cathedralReveal.initialHeight = this.cathedralReveal.height;       // store the initial height of the reveal overlay
 
         // initialize inside place
         this.insidePlace = new InsidePlace(this.places[1]);
@@ -141,7 +155,7 @@ export default class GameScene extends SceneClass {
         this.popup = new Popup();
 
         // add elements to scene
-        this.add([this.year, this.yearProgress, this.resourcesText, this.cathedral.image, this.cathedral.description, this.progressText, this.helpButton, this.cathedralReveal]);
+        this.add([this.year, this.yearProgress, this.resourcesText, cathedral, cathedralDescription, this.progressText, this.helpButton, this.cathedralReveal]);
 
         for (let p of this.places) {        // add all places
             this.add([p.image, p.description, p.indicator]);
@@ -270,7 +284,7 @@ export default class GameScene extends SceneClass {
 
         // update the cathedral progress and reveal cathedral
         this.progressText.text = (this.resources[5] / 100).toFixed(2) + ' %';
-        this.cathedralReveal.height = this.cathedral.image.height * (1 - this.resources[5] / 10000);
+        this.cathedralReveal.height = this.cathedralReveal.initialHeight * (1 - this.resources[5] / 10000);
 
     }
 
@@ -324,7 +338,7 @@ export default class GameScene extends SceneClass {
                     destinationPlace = this.places[3];              // add to bakery
                     break;
                 case 'smith':
-                    destinationPlace = this.places[4];              // add to blacksmith
+                    destinationPlace = this.places[4];              // add to smithy
                     break;
                 default:
                     destinationPlace = this.places[5];              // add to masonry

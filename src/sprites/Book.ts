@@ -7,7 +7,6 @@ import {
     track, GameObject
 } from 'kontra'
 import {gameOptions} from "../helper/gameOptions.ts";
-import myFonts from "../helper/fonts.ts";
 import Line from "./Line.ts"
 import Button from "./Button.ts";
 
@@ -111,7 +110,9 @@ export default class Book extends SpriteClass {
                 x: this.page.x + this.page.width * (0.25 + 0.5 * i),        // adds the title in the middle of the left side (0.25) and in the middle of the right side (0.75)
                 y: this.page.y + gapsY[0],
                 text: '1213',
-                ...myFonts[7]
+                ...gameOptions.fontSubtitles,
+                color: 'black',
+                anchor: {x: 0.5, y: 0}
             }));
         }
 
@@ -168,7 +169,7 @@ export default class Book extends SpriteClass {
             x: 0,
             y: 0,
             text: 't',
-            ...myFonts[5]
+            ...gameOptions.fontYearbook
         }
 
         for (let i = 0; i < lineNum; i++) {     // create the text lines
@@ -228,7 +229,7 @@ export default class Book extends SpriteClass {
 
             this.buyButtons.push(Text({
                 text: 'for 100',
-                ...myFonts[2],
+                ...gameOptions.fontYearbook,
                 color: 'black'
             }));
 
@@ -257,7 +258,7 @@ export default class Book extends SpriteClass {
             x: this.page.x + distanceButton,
             y: this.page.y + distanceButton,
             text: '⬅️',
-            ...myFonts[6],
+            ...gameOptions.fontButtonProgress,
             anchor: {x: 0, y: 0},
             onDown: () => {emit('previousButton');}
         });
@@ -266,7 +267,7 @@ export default class Book extends SpriteClass {
             x: this.page.x + this.page.width - distanceButton,
             y: this.page.y + distanceButton,
             text: '➡️',
-            ...myFonts[6],
+            ...gameOptions.fontButtonProgress,
             anchor: {x: 1, y: 0},
             onDown: () => {emit('nextButton');}
         });

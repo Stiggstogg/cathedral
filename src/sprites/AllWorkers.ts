@@ -71,7 +71,7 @@ export default class AllWorkers extends SpriteClass {
                 }
 
                 // hire fire button
-                if (placeType == 'Town') {
+                if (placeType == 't') {
                     this.tiles[i].showButton('Hire');
                 }
                 else {

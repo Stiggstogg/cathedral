@@ -6,7 +6,6 @@ import {
     emit
 } from 'kontra'
 import {gameOptions} from "../helper/gameOptions.ts";
-import myFonts from "../helper/fonts.ts";
 import Button from "../sprites/Button.ts";
 //import Line from "./Line.ts"
 
@@ -56,7 +55,9 @@ export default class WorkerTile extends SpriteClass {
             x: this.width / 2,
             y: yDistances[0],
             text: '',
-            ...myFonts[7]
+            ...gameOptions.fontSubtitles,
+            color: 'black',
+            anchor: {x: 0.5, y: 0}
         });
 
         // create shadow
@@ -83,26 +84,26 @@ export default class WorkerTile extends SpriteClass {
             x: this.width / 2,
             y: this.name.y + this.name.height + yDistances[1],
             text: '',
-            ...myFonts[3],
+            ...gameOptions.fontTitlePictures,
             anchor: {x: 0.5, y: 0}
         });
 
         // create job text
         this.job = Text({
             text: '',
-            ...myFonts[5]
+            ...gameOptions.fontYearbook
         });
 
         // create age text
         this.age = Text({
             text: '',
-            ...myFonts[5]
+            ...gameOptions.fontYearbook
         });
 
         // create age text
         this.wage = Text({
             text: '',
-            ...myFonts[5]
+            ...gameOptions.fontYearbook
         });
 
         // create the characteristics titles
@@ -111,9 +112,9 @@ export default class WorkerTile extends SpriteClass {
             y: this.picture.y + this.picture.height + yDistances[1] / 2,
             justify: 'start',
             children: [
-                Text({text: 'Job:', ...myFonts[5]}),
-                Text({text: 'Age:', ...myFonts[5]}),
-                Text({text: 'Wage:', ...myFonts[5]})
+                Text({text: 'Job:', ...gameOptions.fontYearbook}),
+                Text({text: 'Age:', ...gameOptions.fontYearbook}),
+                Text({text: 'Wage:', ...gameOptions.fontYearbook})
             ],
             rowGap: yDistances[3]
         });
@@ -133,7 +134,7 @@ export default class WorkerTile extends SpriteClass {
             x: characteristicsTitle.x,
             y: characteristicsTitle.y + characteristicsTitle.height + yDistances[1] / 2,
             text: 'Reputation:',
-            ...myFonts[5],
+            ...gameOptions.fontYearbook,
             width: this.width - 2 * xDistances[0]
         });
 
@@ -142,7 +143,7 @@ export default class WorkerTile extends SpriteClass {
             x: reputationTitle.x,
             y: reputationTitle.y + reputationTitle.height + yDistances[3],
             text: '',
-            ...myFonts[5],
+            ...gameOptions.fontYearbook,
             width: this.width - 2 * xDistances[0]
         });
 

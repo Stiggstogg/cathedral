@@ -5,7 +5,6 @@ import {
     emit
 } from 'kontra'
 import {gameOptions} from "../helper/gameOptions.ts";
-import myFonts from "../helper/fonts.ts";
 import Button from "./Button.ts";
 
 export default class Popup extends SpriteClass {
@@ -58,8 +57,9 @@ export default class Popup extends SpriteClass {
         this.text = Text({
             x: this.textDistance,
             y: this.textDistance,
-            text: 'Hello',
-            ...myFonts[2],
+            text: '',
+            ...gameOptions.fontYearbook,
+            color: 'white',
             width: this.width - 2 * this.textDistance
         });
 

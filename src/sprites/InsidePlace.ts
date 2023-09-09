@@ -4,7 +4,6 @@ import {
     track, on, emit
 } from 'kontra'
 import {gameOptions} from "../helper/gameOptions.ts";
-import myFonts from "../helper/fonts.ts";
 import Book from "./Book.ts";
 import AllWorkers from "./AllWorkers.ts";
 import Place from "./Place.ts";
@@ -53,17 +52,17 @@ export default class InsidePlace extends SpriteClass {
         // create title
         this.title = Text({
             x: this.width / 2,
-            y: gameOptions.gameHeight * 0.02,
+            y: gameOptions.gameHeight * 0.06,
             text: 'Title',
-            ...myFonts[6]
+            ...gameOptions.fontButtonProgress
         });
 
         // cancel button
         this.cancelButton = Text({
-            x: gameOptions.gameWidth * 0.96,
-            y: gameOptions.gameWidth * 0.01,
+            x: gameOptions.gameWidth * 0.97,
+            y: gameOptions.gameWidth * 0.03,
             text: '❎',
-            ...myFonts[6],
+            ...gameOptions.fontButtonProgress,
             onDown: () => {
                 this.hide();
                 emit('makeClick');
@@ -75,8 +74,7 @@ export default class InsidePlace extends SpriteClass {
             x: this.cancelButton.x,
             y: gameOptions.gameHeight - gameOptions.gameHeight * 0.08,
             text: '❓',
-            ...myFonts[6],
-            anchor: {x: 0.5, y: 0.5},
+            ...gameOptions.fontButtonProgress,
             onDown: () => {
                 emit('showHelp', this.place);
             }
@@ -94,8 +92,7 @@ export default class InsidePlace extends SpriteClass {
             x: this.cancelButton.x,
             y: this.book.page.y + this.book.page.height / 2,
             text: '🧔‍♂️',
-            ...myFonts[6],
-            anchor: {x: 0.5, y: 0.5},
+            ...gameOptions.fontButtonProgress,
             onDown: () => {
                 this.bookVisible = false;
                 this.workersVisible = true;
@@ -109,8 +106,7 @@ export default class InsidePlace extends SpriteClass {
             x: this.workerButton.x,
             y: this.workerButton.y,
             text: '📙',
-            ...myFonts[6],
-            anchor: {x: 0.5, y: 0.5},
+            ...gameOptions.fontButtonProgress,
             onDown: () => {
                 this.bookVisible = true;
                 this.workersVisible = false;
@@ -149,7 +145,7 @@ export default class InsidePlace extends SpriteClass {
 
         this.book.showNextButton = this.place.yearExist(Number(this.book.year[0].text) + 1);
 
-        if (this.place.placeType == 'Market') {         // update the market page to ensure the current resources are visible
+        if (this.place.placeType == 'm') {         // update the market page to ensure the current resources are visible
             this.fillPageMarket();
         }
 
@@ -184,7 +180,7 @@ export default class InsidePlace extends SpriteClass {
         this.title.text = this.place.name + ' ' + this.place.emoji;  // set the title
 
         // set everything correct for a workshop
-        if (this.place.placeType == 'Workshop') {
+        if (this.place.placeType == 'w') {
 
             this.bookVisible = true;
             this.workersVisible = false;
@@ -194,7 +190,7 @@ export default class InsidePlace extends SpriteClass {
             this.fillPageWorkshop(year);
 
         }
-        else if (this.place.placeType == 'Bishop') {
+        else if (this.place.placeType == 'b') {
 
             this.bookVisible = true;
             this.workersVisible = false;
@@ -204,7 +200,7 @@ export default class InsidePlace extends SpriteClass {
             this.fillPageWorkshop(year);
 
         }
-        else if (this.place.placeType == 'Market') {
+        else if (this.place.placeType == 'm') {
 
             this.bookVisible = true;
             this.workersVisible = false;
@@ -214,7 +210,7 @@ export default class InsidePlace extends SpriteClass {
             this.fillPageMarket();
 
         }
-        else if (this.place.placeType == 'Town') {
+        else if (this.place.placeType == 't') {
 
             this.bookVisible = false;
             this.workersVisible = true;
@@ -254,7 +250,7 @@ export default class InsidePlace extends SpriteClass {
         for (let i = 0; i < entry.workerBalance.length; i++) {      // write worker balance
 
             // keep the line empty if there was no worker in the bishop place
-            if (this.place.placeType == 'Bishop' && entry.workerBalance[i].name == '-') {
+            if (this.place.placeType == 'b' && entry.workerBalance[i].name == '-') {
 
                 textLeft.push('','', '', '', '', '', '');
 

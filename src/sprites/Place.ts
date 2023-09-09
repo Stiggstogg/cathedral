@@ -3,7 +3,6 @@ import {
     Text,
     track, emit
 } from 'kontra'
-import myFonts from "../helper/fonts.ts";
 import {gameOptions} from "../helper/gameOptions.ts";
 import Worker from "../sprites/Worker.ts";
 import random from "../helper/Random.ts";
@@ -25,7 +24,7 @@ export default class Place {
     public helpString: string;
     private indicatorXDirection: number;
 
-    constructor(x: number, y: number, name: string, emoji: string, emojiFont: number, placeType: string, relevantResources: boolean[], resources: number[], helpString: string) {
+    constructor(x: number, y: number, name: string, emoji: string, placeType: string, relevantResources: boolean[], resources: number[], helpString: string) {
 
         // initialize variables
         this.fullYearbook = [];
@@ -41,19 +40,19 @@ export default class Place {
         this.relevantResources = relevantResources;
         this.emoji = emoji;
 
-        // create elements of the composition (picture, text and indicator text)
-        this.image = Text({x: gameOptions.gameWidth * x, y: gameOptions.gameHeight * y, text: emoji, ...myFonts[emojiFont], onDown: () => {this.click()}});
+        // create elements of the pieces on the main screen (picture, text and indicator text)
+        this.image = Text({x: gameOptions.gameWidth * x, y: gameOptions.gameHeight * y, text: emoji, ...gameOptions.fontTitlePictures, onDown: () => {this.click()}});
 
         this.description = Text({
             x: this.image.x,
-            y: this.image.y + this.image.height / 2,
-            text: this.name, ...myFonts[2], anchor: {x: 0.5, y: 0}, onDown: () => { this.click() }
+            y: this.image.y + this.image.height / 2 + gameOptions.gameHeight * 0.01,
+            text: this.name, ...gameOptions.fontSubtitles, anchor: {x: 0.5, y: 0}, onDown: () => { this.click() }
         });
 
         this.indicator = Text({
             x: this.image.x,
             y: this.image.y - this.image.height / 2 - gameOptions.gameHeight * 0.02,
-            text: '', ...myFonts[2], anchor: {x: 0.5, y: 1}
+            text: '', ...gameOptions.fontSubtitles, anchor: {x: 0.5, y: 1}
         });
 
         // track the pointer down events
@@ -70,7 +69,7 @@ export default class Place {
 
     update() {
 
-        if (this.placeType == 'Workshop' && this.name != 'Bishop') {
+        if (this.placeType == 'w') {
             this.description.text = this.name + ' (' + String(this.numberOfWorkers()) + '/5)';
         }
 
@@ -100,9 +99,7 @@ export default class Place {
     // action which happens if the image or the description is clicked
     click() {
 
-        if (this.placeType != "Cathedral") {        // cathedral cannot be clicked
-            emit('clickPlace', this);
-        }
+        emit('clickPlace', this);
 
     }
 
@@ -110,15 +107,13 @@ export default class Place {
     tick(year: number) {
 
         // increase the age of all workers
-        for (let i = 0; i < this.workers.length; i++) {
-
-            if (this.workers[i].name != 'Empty') {
-                this.workers[i].birthday();
+        for (let w of this.workers) {
+            if (w.name != 'Empty') {
+                w.birthday();
             }
-
         }
 
-        if (this.placeType == 'Town') {
+        if (this.placeType == 't') {
 
             // update all worker spots
             for (let i = 0; i < this.workers.length; i++) {
@@ -167,7 +162,7 @@ export default class Place {
             }
 
         }
-        else if (this.placeType == 'Market') {
+        else if (this.placeType == 'm') {
 
             // generate new market prices
             this.prices = [Math.round(random.generateUniform(gameOptions.marketPriceMatrix[0])), Math.round(random.generateUniform(gameOptions.marketPriceMatrix[1]))];
@@ -251,7 +246,7 @@ export default class Place {
             for (let i = 0; i < this.workers.length; i++) {
                 if (this.workers[i].job != 'empty' && this.workers[i].dies() && yearbookEntry.events.length < 9) {      // check for each non empty worker if they die and if there are not yet too many events (to not overfill the yearbook)
 
-                    if (this.placeType == 'Bishop') {
+                    if (this.placeType == 'b') {
                         yearbookEntry.events.push('Bishop ' + this.workers[i].name + ' (' + String(this.workers[i].age) + ') passed away ☠️!');  // write yearbook entry
                         this.workers[i] = new Worker('bishop');                      // replace with a new bishop
                         yearbookEntry.events.push('Welcome Bishop ' + this.workers[i].name + '!');  // write yearbook entry
@@ -381,7 +376,7 @@ export default class Place {
             events: ['No cathedral yet!']
         });
 
-        // set the prices for iron and stone (only used for the market
+        // set the prices for iron and stone (only used for the market)
         this.prices = [Math.round(random.generateUniform(gameOptions.marketPriceMatrix[0])), Math.round(random.generateUniform(gameOptions.marketPriceMatrix[1]))];
 
         // set the empty workers
@@ -390,7 +385,7 @@ export default class Place {
         }
 
         // if the place is the bishop place, add the bishop
-        if (this.placeType == 'Bishop') {
+        if (this.placeType == 'b') {
             this.workers[0] = new Worker('bishop');
         }
 

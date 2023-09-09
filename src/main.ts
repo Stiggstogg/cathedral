@@ -52,8 +52,6 @@ function autoFitCanvas() {
 
     let canvasRatio = gameOptions.gameWidth / gameOptions.gameHeight;
 
-    console.log('text');
-
     // take the window width and calculate (using the canvas ratio) the resulting canvas height. Check if this height is
     // larger than the window height. If yes, then set the canvas height (in CSS, not the real canvas height)
     if (window.innerWidth / canvasRatio > window.innerHeight) {
@@ -61,18 +59,11 @@ function autoFitCanvas() {
         canvas.style.height = window.innerHeight + 'px';
         canvas.style.width = window.innerHeight * canvasRatio + 'px';
 
-        console.log('One:')
-        console.log(window.innerHeight + 'px');
-        console.log(window.innerHeight * canvasRatio + 'px');
     }
     else {
 
         canvas.style.width = window.innerWidth + 'px';
         canvas.style.height = window.innerWidth / canvasRatio + 'px';
-
-        console.log('Two:')
-        console.log(window.innerWidth + 'px');
-        console.log(window.innerWidth / canvasRatio + 'px');
 
     }
 
