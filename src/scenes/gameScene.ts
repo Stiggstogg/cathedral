@@ -58,6 +58,8 @@ export default class GameScene extends SceneClass {
         // help text and button
         this.helpString = 'Welcome to the 13th century, a time when magnificent cathedrals adorn the skyline of every major city, except yours.\n\n' +
             'You\'ve been appointed as the CATHEDRAL MASTER BUILDER by the bishop to build a cathedral before the century\'s end.\n\n' +
+            'The bishop✝️ provides money💵 for your project. Visit the TOWN🏘️ to recruit skilled workers for your BAKERY🥖, SMITHY⚒️, and MASONRY🧱. ' +
+            'Procure iron🧲 and stone🧱 from the MARKET🧺.\n\n' +
             'For detailed guidance and information, explore each location.'
 
         this.helpButton = Text({
@@ -87,11 +89,11 @@ export default class GameScene extends SceneClass {
             numCols: 2,
             flow: 'grid',
             children: [
-                Text({text: '🪙: ', ...gameOptions.fontSubtitles}),
+                Text({text: '💵: ', ...gameOptions.fontSubtitles}),
                 Text({text: '', ...gameOptions.fontSubtitles}),
                 Text({text: '🧲: ', ...gameOptions.fontSubtitles}),
                 Text({text: '', ...gameOptions.fontSubtitles}),
-                Text({text: '🪨: ', ...gameOptions.fontSubtitles}),
+                Text({text: '🧱: ', ...gameOptions.fontSubtitles}),
                 Text({text: '', ...gameOptions.fontSubtitles}),
                 Text({text: '🥖: ', ...gameOptions.fontSubtitles}),
                 Text({text: '', ...gameOptions.fontSubtitles}),
@@ -111,7 +113,7 @@ export default class GameScene extends SceneClass {
             [true, false, false, true, false, false], this.resources, helpTexts[3]));
         this.places.push(new Place(0.71, 0.35, 'Smithy', '⚒️', 'w',
             [true, true, false, true, true, false], this.resources, helpTexts[4]));
-        this.places.push(new Place(0.87, 0.75, 'Masonry', '🪨', 'w',
+        this.places.push(new Place(0.87, 0.75, 'Masonry', '🧱', 'w',
             [true, false, true, true, true, true], this.resources, helpTexts[5]));
 
         // create cathedral
@@ -139,9 +141,9 @@ export default class GameScene extends SceneClass {
         // cathedral reveal
         this.cathedralReveal = Sprite({
             x: cathedral.x - cathedral.width / 2,
-            y: cathedral.y - cathedral.height / 2 - gameOptions.gameHeight * 0.03,
+            y: cathedral.y - cathedral.height / 2 - gameOptions.gameHeight * 0.04,
             width: cathedral.width,
-            height: cathedral.height,
+            height: cathedral.height + gameOptions.gameHeight * 0.04,
             opacity: 0.75,
             color: '#58a23c',
         });

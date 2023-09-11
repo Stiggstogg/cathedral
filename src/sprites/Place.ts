@@ -278,7 +278,7 @@ export default class Place {
             this.writeYearbookEntry(yearbookEntry);
 
             // write the indicator
-            let symbols = ['🪙','🧲','🪨','🥖','⚒️','⛪'];
+            let symbols = ['💵','🧲','🧱','🥖','⚒️','⛪'];
 
             for (let i = this.relevantResources.length - 1; i >= 0; i--) {         // find the last true entry in the relevant resources array (as this is the resource which is produced in this workshop)
                 if (this.relevantResources[i]) {

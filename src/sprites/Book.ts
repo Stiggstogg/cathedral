@@ -235,7 +235,7 @@ export default class Book extends SpriteClass {
 
             if (i == 1) {
                 this.buyButtons.push(Text({text: ''}), Text({text: ''}));     // gap between the two resource types
-                buyResourceEmoji = '🪨';                                                        // change emoji
+                buyResourceEmoji = '🧱';                                                        // change emoji
             }
         }
 

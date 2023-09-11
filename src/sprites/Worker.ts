@@ -88,16 +88,16 @@ export default class Worker {
         let reputationMatrix = [
                 [''],                       // 0: money consumption (not used!)
                 [''],                       // 1: money production (no used)
-                ['🟠Inefficient', '🟢Efficient'],   // 2: iron consumption (smith)
+                ['👎Inefficient', '🙂Efficient'],   // 2: iron consumption (smith)
                 [''],                       // 3: iron production (not used!)
-                ['🟠Inefficient', '🟢Efficient'],   // 4: stone consumption (mason)
+                ['👎Inefficient', '🙂Efficient'],   // 4: stone consumption (mason)
                 [''],                       // 5: stone production (not used!)
-                ['🟠Hungry', '🟢Small Appetite'],   // 6: bread consumption (smith, mason)
-                ['🟠Lazy', '🟢Hard working'],       // 7: bread production (baker)
-                ['🟠Inefficient', '🟢Efficient'],   // 8: tool consumption (mason)
-                ['🟠Lazy', '🟢Hard working'],       // 9: tool production (smith)
+                ['👎Hungry', '🙂Small Appetite'],   // 6: bread consumption (smith, mason)
+                ['👎Lazy', '🙂Hard working'],       // 7: bread production (baker)
+                ['👎Inefficient', '🙂Efficient'],   // 8: tool consumption (mason)
+                ['👎Lazy', '🙂Hard working'],       // 9: tool production (smith)
                 [''],                       // 10: cathedral consumption (not used!)
-                ['🟠Lazy', '🟢Hard working'],       // 11: cathedral production (mason)
+                ['👎Lazy', '🙂Hard working'],       // 11: cathedral production (mason)
             ];
 
         // create the production matrix (!gameplay setting!)
@@ -128,7 +128,7 @@ export default class Worker {
         }
         else if (this.job == 'mason') {
             profile = [0, -1, 0, 0, 0, 1];
-            this.jobEmoji = '🪨';
+            this.jobEmoji = '🧱';
         }
         else if (this.job == 'bishop') {
             profile = [1, -1, -1, -1, -1, -1];

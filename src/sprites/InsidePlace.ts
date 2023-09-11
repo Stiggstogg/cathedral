@@ -91,7 +91,7 @@ export default class InsidePlace extends SpriteClass {
         this.workerButton = Text({
             x: this.cancelButton.x,
             y: this.book.page.y + this.book.page.height / 2,
-            text: '🧔‍♂️',
+            text: '🧔️',
             ...gameOptions.fontButtonProgress,
             onDown: () => {
                 this.bookVisible = false;
@@ -234,7 +234,7 @@ export default class InsidePlace extends SpriteClass {
 
         // left text
         let relevantResources = this.place.relevantResources;   // get the array with the relevant resources
-        let resourceSymbols = [' 🪙 ',' 🧲 ',' 🪨 ',' 🥖 ',' ⚒️ ',' ⛪ '];
+        let resourceSymbols = [' 💵 ',' 🧲 ',' 🧱 ',' 🥖 ',' ⚒️ ',' ⛪ '];
         let textLeft: string[] = [];                        // initialize
         textLeft.push('Balance:', '', '', '', '', '', '', '');      // first title line and first entry of the resources line (empty)
 
@@ -325,10 +325,10 @@ export default class InsidePlace extends SpriteClass {
 
         // left text
         let textLeft = [
-            'Your Resources:', '', '', '', '', '', '',
-            '', '🪙:', String(this.place.resources[0]), '', '', '', '',
+            'Your Resources:', '', '        ', '', '', '', '',
+            '', '💵:', String(this.place.resources[0]), '', '', '', '',
             '', '🧲:', String(this.place.resources[1]), '', '', '', '',
-            '', '🪨:', String(this.place.resources[2]), '', '', '', '',
+            '', '🧱:', String(this.place.resources[2]), '', '', '', '',
             '', '🥖:', String(this.place.resources[3]), '', '', '', '',
             '', '⚒️:', String(this.place.resources[4]), '', '', '', '',
         ]
@@ -337,10 +337,10 @@ export default class InsidePlace extends SpriteClass {
             true, false, true, textLeft, ['']);
 
         // update price next to buttons
-        this.book.buyButtons[1].text = 'for ' + String(this.place.prices[0]) + '🪙';
-        this.book.buyButtons[3].text = 'for ' + String(this.place.prices[0] * 10) + '🪙';
-        this.book.buyButtons[7].text = 'for ' + String(this.place.prices[1]) + '🪙';
-        this.book.buyButtons[9].text = 'for ' + String(this.place.prices[1] * 10) + '🪙';
+        this.book.buyButtons[1].text = 'for ' + String(this.place.prices[0]) + '💵';
+        this.book.buyButtons[3].text = 'for ' + String(this.place.prices[0] * 10) + '💵';
+        this.book.buyButtons[7].text = 'for ' + String(this.place.prices[1]) + '💵';
+        this.book.buyButtons[9].text = 'for ' + String(this.place.prices[1] * 10) + '💵';
 
     }
 

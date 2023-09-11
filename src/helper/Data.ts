@@ -10,7 +10,7 @@ export const names = [
 
 // list of emojis which can be used for the workers
 export const emojiYoung = ['🧒', '👦'];
-export const emojiOld = ['🧑', '👱', '🧔‍♂️', '👨‍🦰', '👨‍🦲', '🧑‍🦱'];
+export const emojiOld = ['🧑', '👱', '🧔️', '👨‍🦰', '👨‍🦲', '🧑‍🦱'];
 
 const helpText = 'Monitor your workers\' performance by reviewing the balance in the yearbook.\n\n' +
     'To manage your workers, click on the worker symbol (right). If they underperformed, fire them. '+
