@@ -1,8 +1,8 @@
 # ⛪ CATHEDRAL MASTER BUILDER ⛪
 
-This is my entry to [js13kgames Jam 2023](https://js13kgames.com/) with the theme "13th Century".
+This is my entry to [js13kGames Jam 2023](https://js13kgames.com/) with the theme "13th Century".
 
-Play the game here: comming soon
+Play the game here: coming soon
 
 # About
 Welcome to the 13th century, a time when magnificent cathedrals adorn the skyline of every major city, except yours.
@@ -19,4 +19,4 @@ The bishop✝️ provides money💵 for your project. Visit the TOWN🏘️ to r
   - Packer: [Roadroller](https://lifthrasiir.github.io/roadroller/) (standard settings)
   - Compression: [7zip](https://www.7-zip.org/) ("Ultra" compression)
 - Graphics: Emojis (supported versions: > Unicode 11.0 / Emoji 11.0)
-- Sound: Tiny self made music and sound player based on triangle oscillator from Web Audio API
+- Sound: Tiny self-made music and sound player based on triangle oscillator from Web Audio API
