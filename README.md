@@ -1,6 +1,6 @@
 # ⛪ CATHEDRAL MASTER BUILDER ⛪
 
-This is my entry to js [js13kgames Jam 2023](https://js13kgames.com/) with the theme "13th Century".
+This is my entry to [js13kgames Jam 2023](https://js13kgames.com/) with the theme "13th Century".
 
 Play the game here: comming soon
 
